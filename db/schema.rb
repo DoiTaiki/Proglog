@@ -16,8 +16,8 @@ ActiveRecord::Schema.define(version: 2021_06_23_064557) do
   enable_extension "plpgsql"
 
   create_table "articles", force: :cascade do |t|
-    t.string "title", limit: 100, null: false
-    t.string "description", limit: 255
+    t.string "title", null: false
+    t.string "description"
     t.text "text", null: false
     t.bigint "user_id", null: false
     t.datetime "created_at", precision: 6, null: false
@@ -26,7 +26,7 @@ ActiveRecord::Schema.define(version: 2021_06_23_064557) do
   end
 
   create_table "users", force: :cascade do |t|
-    t.string "name", limit: 50, null: false
+    t.string "name", null: false
     t.string "email", null: false
     t.string "password_digest", null: false
     t.datetime "created_at", precision: 6, null: false

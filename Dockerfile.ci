@@ -13,8 +13,8 @@ RUN apk update && apk add --no-cache \
 WORKDIR /proglog
 COPY Gemfile /proglog/Gemfile
 COPY Gemfile.lock /proglog/Gemfile.lock
-RUN bundle config set --local deployment 'true'
-&& bundle config set --local without 'test development'
+RUN bundle config set --local deployment 'true' \
+&& bundle config set --local without 'test development' \
 && bundle install
 RUN apk del --purge .build-deps
 COPY . /proglog

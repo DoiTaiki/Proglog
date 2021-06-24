@@ -1,0 +1,556 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: RDS template
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      -
+        Label:
+          default: Common settings
+        Parameters:
+          - vpcStackName
+      -
+        Label:
+          default: DB engine settings
+        Parameters:
+          - dbEngine
+          - dbEngineMajorVersion
+          - dbEngineMinorVersion
+          - dbInstanceType
+          - dbTimezone
+          - dbCharset
+          - dbName
+          - dbUsername
+          - dbPassword
+          - dbStorageSize
+          - dbStorageMaxSize
+          - isMultiAz
+Parameters:
+  vpcStackName:
+    Type: String
+    Description: VPC stack name
+  dbEngine:
+    Type: String
+    Description: Database engine name
+    AllowedValues:
+      - aurora
+      - aurora-mysql
+      - aurora-postgresql
+      - mariadb
+      - mysql
+      - postgres
+    Default: postgres
+  dbEngineMajorVersion:
+    Type: String
+    Description: Database engine major version
+    AllowedValues:
+      # For mysql
+      - '5.5'
+      # For mysql, aurora
+      - '5.6'
+      # For mysql, aurora-mysql
+      - '5.7'
+      # For mysql
+      - '8.0'
+      # For postgres
+      - '9'
+      # For postgres, aurora-postgresql
+      - '9.6'
+      - '10'
+      - '11'
+      # For postgres
+      - '12'
+      - '13'
+      # For mariadb
+      - '10.0'
+      - '10.1'
+      - '10.2'
+      - '10.3'
+      - '10.4'
+    Default: '12'
+  dbEngineMinorVersion:
+    Type: String
+    Description: Database engine minor version
+    Default: '6'
+  dbInstanceType:
+    Type: String
+    Description: Database instance type
+    AllowedValues:
+      - db.t2.micro
+      - db.t2.small
+      - db.t2.medium
+      - db.t2.large
+      - db.t2.xlarge
+      - db.t2.2xlarge
+      - db.t3.micro
+      - db.t3.small
+      - db.t3.medium
+      - db.t3.large
+      - db.t3.xlarge
+      - db.t3.2xlarge
+      - db.m4.large
+      - db.m4.xlarge
+      - db.m4.2xlarge
+      - db.m4.4xlarge
+      - db.m4.10xlarge
+      - db.m4.16xlarge
+      - db.m5.large
+      - db.m5.xlarge
+      - db.m5.2xlarge
+      - db.m5.4xlarge
+      - db.m5.8xlarge
+      - db.m5.12xlarge
+      - db.m5.16xlarge
+      - db.m5.24xlarge
+      - db.m6g.large
+      - db.m6g.xlarge
+      - db.m6g.2xlarge
+      - db.m6g.8xlarge
+      - db.m6g.12xlarge
+      - db.m6g.16xlarge
+      - db.r4.large
+      - db.r4.xlarge
+      - db.r4.2xlarge
+      - db.r4.4xlarge
+      - db.r4.8xlarge
+      - db.r4.16xlarge
+      - db.r5.large
+      - db.r5.xlarge
+      - db.r5.2xlarge
+      - db.r5.4xlarge
+      - db.r5.8xlarge
+      - db.r5.12xlarge
+      - db.r5.16xlarge
+      - db.r5.24xlarge
+      - db.r6g.large
+      - db.r6g.xlarge
+      - db.r6g.2xlarge
+      - db.r6g.4xlarge
+      - db.r6g.8xlarge
+      - db.r6g.12xlarge
+      - db.r6g.16xlarge
+    Default: db.t2.micro
+  dbTimezone:
+    Type: String
+    Description: Database timezone for PostgreSQL
+    Default: Asia/Tokyo
+  dbCharset:
+    Type: String
+    Description: Database character set for MySQL
+    Default: utf8mb4
+  dbName:
+    Type: String
+    Description: Database name
+  dbUsername:
+    Type: String
+    Description: Database username
+  dbPassword:
+    Type: String
+    Description: Database password
+    NoEcho: true
+  dbStorageSize:
+    Type: Number
+    Description: RDS storage size
+    MinValue: 20
+    MaxValue: 65536
+    Default: 20
+  dbStorageMaxSize:
+    Type: Number
+    Description: RDS storage max size
+    MinValue: 20
+    MaxValue: 65536
+    Default: 20
+  isMultiAz:
+    Type: String
+    Description: Is multi-AZ for RDS
+    AllowedValues:
+      - true
+      - false
+    Default: false
+Mappings:
+  RegionConfig:
+    us-east-1:
+      azNum: 6
+    us-east-2:
+      azNum: 3
+    us-west-1:
+      azNum: 2
+    us-west-2:
+      azNum: 4
+    ca-central-1:
+      azNum: 3
+    ap-northeast-1:
+      azNum: 3
+    ap-northeast-2:
+      azNum: 4
+    ap-south-1:
+      azNum: 3
+    ap-southeast-1:
+      azNum: 3
+    ap-southeast-2:
+      azNum: 3
+    eu-north-1:
+      azNum: 3
+    eu-central-1:
+      azNum: 3
+    eu-west-1:
+      azNum: 3
+    eu-west-2:
+      azNum: 3
+    eu-west-3:
+      azNum: 3
+    sa-east-1:
+      azNum: 3
+Conditions:
+  has3rdAz:
+    Fn::Or:
+      - Fn::Equals:
+        - Fn::FindInMap:
+          - RegionConfig
+          - !Ref AWS::Region
+          - azNum
+        - 3
+      - Fn::Equals:
+        - Fn::FindInMap:
+          - RegionConfig
+          - !Ref AWS::Region
+          - azNum
+        - 4
+      - Fn::Equals:
+        - Fn::FindInMap:
+          - RegionConfig
+          - !Ref AWS::Region
+          - azNum
+        - 5
+      - Fn::Equals:
+        - Fn::FindInMap:
+          - RegionConfig
+          - !Ref AWS::Region
+          - azNum
+        - 6
+  has4thAz:
+    Fn::Or:
+      - Fn::Equals:
+        - Fn::FindInMap:
+          - RegionConfig
+          - !Ref AWS::Region
+          - azNum
+        - 4
+      - Fn::Equals:
+        - Fn::FindInMap:
+          - RegionConfig
+          - !Ref AWS::Region
+          - azNum
+        - 5
+      - Fn::Equals:
+        - Fn::FindInMap:
+          - RegionConfig
+          - !Ref AWS::Region
+          - azNum
+        - 6
+  has5thAz:
+    Fn::Or:
+      - Fn::Equals:
+        - Fn::FindInMap:
+          - RegionConfig
+          - !Ref AWS::Region
+          - azNum
+        - 5
+      - Fn::Equals:
+        - Fn::FindInMap:
+          - RegionConfig
+          - !Ref AWS::Region
+          - azNum
+        - 6
+  has6thAz:
+    Fn::Equals:
+      - Fn::FindInMap:
+        - RegionConfig
+        - !Ref AWS::Region
+        - azNum
+      - 6
+  isAurora:
+    Fn::Or:
+      - Fn::Equals:
+        - !Ref dbEngine
+        - aurora
+      - Fn::Equals:
+        - !Ref dbEngine
+        - aurora-mysql
+      - Fn::Equals:
+        - !Ref dbEngine
+        - aurora-postgresql
+  isNotAurora:
+    Fn::Not:
+      - !Condition isAurora
+  isPostgres:
+    Fn::Or:
+      - Fn::Equals:
+        - !Ref dbEngine
+        - postgres
+      - Fn::Equals:
+        - !Ref dbEngine
+        - aurora-postgresql
+  disableAutoScaleStorage:
+    Fn::Or:
+      - !Condition isAurora
+      - Fn::Equals:
+        - !Ref dbStorageSize
+        - !Ref dbStorageMaxSize
+Resources:
+  dbSubnetGroup:
+    Type: AWS::RDS::DBSubnetGroup
+    Properties:
+      DBSubnetGroupDescription: !Join
+        - ' '
+        - - !Ref AWS::StackName
+          - database subnet group
+      SubnetIds:
+        Fn::Split:
+          - ','
+          - Fn::ImportValue: !Join
+            - ':'
+            - - !Ref vpcStackName
+              - privateSubnets
+      Tags:
+        - Key: Name
+          Value: !Join
+            - '-'
+            - - !Ref AWS::StackName
+              - DatabaseSubnetGroup
+        - Key: CostTag
+          Value: !Ref AWS::StackName
+  dbSrcSecGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Database source security group
+      VpcId:
+        Fn::ImportValue: !Join
+          - ':'
+          - - !Ref vpcStackName
+            - vpcId
+      Tags:
+        - Key: Name
+          Value: !Join
+            - '-'
+            - - !Ref AWS::StackName
+              - DBSourceSecurityGroup
+        - Key: CostTag
+          Value: !Ref AWS::StackName
+  dbSecGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Database security group
+      VpcId:
+        Fn::ImportValue: !Join
+          - ':'
+          - - !Ref vpcStackName
+            - vpcId
+      SecurityGroupIngress:
+        -
+          SourceSecurityGroupId: !Ref dbSrcSecGroup
+          Description: DB connection
+          IpProtocol: tcp
+          FromPort:
+            Fn::If:
+              - isPostgres
+              - 5432
+              - 3306
+          ToPort:
+            Fn::If:
+              - isPostgres
+              - 5432
+              - 3306
+      Tags:
+        - Key: Name
+          Value: !Join
+            - '-'
+            - - !Ref AWS::StackName
+              - DBSecurityGroup
+        - Key: CostTag
+          Value: !Ref AWS::StackName
+  dbClusterParamGroup:
+    Type: AWS::RDS::DBClusterParameterGroup
+    Condition: isAurora
+    Properties:
+      Description: Aurora cluster parameter group
+      Family: !Join
+        - ''
+        - - !Ref dbEngine
+          - !Ref dbEngineMajorVersion
+      Parameters:
+        Fn::If:
+          - isPostgres
+          - timezone: !Ref dbTimezone
+          - character_set_server: !Ref dbCharset
+      Tags:
+        - Key: Name
+          Value: !Join
+            - '-'
+            - - !Ref AWS::StackName
+              - DBClusterParameterGroup
+        - Key: CostTag
+          Value: !Ref AWS::StackName
+  dbParamGroup:
+    Type: AWS::RDS::DBParameterGroup
+    Properties:
+      Description: RDS parameter group
+      Family: !Join
+        - ''
+        - - !Ref dbEngine
+          - !Ref dbEngineMajorVersion
+      Parameters:
+        Fn::If:
+          - isAurora
+          - !Ref AWS::NoValue
+          - Fn::If:
+            - isPostgres
+            - timezone: !Ref dbTimezone
+            - character_set_server: !Ref dbCharset
+      Tags:
+        - Key: Name
+          Value: !Join
+            - '-'
+            - - !Ref AWS::StackName
+              - DBParameterGroup
+        - Key: CostTag
+          Value: !Ref AWS::StackName
+  dbCluster:
+    Type: AWS::RDS::DBCluster
+    Condition: isAurora
+    Properties:
+      BackupRetentionPeriod: 7
+      DatabaseName: !Ref dbName
+      DBClusterParameterGroupName: !Ref dbClusterParamGroup
+      DBSubnetGroupName: !Ref dbSubnetGroup
+      Engine: !Ref dbEngine
+      EngineMode: provisioned
+      EngineVersion: !Join
+        - '.'
+        - - !Ref dbEngineMajorVersion
+          - !Ref dbEngineMinorVersion
+      MasterUsername: !Ref dbUsername
+      MasterUserPassword: !Ref dbPassword
+      Port:
+        Fn::If:
+          - isPostgres
+          - 5432
+          - 3306
+      StorageEncrypted: true
+      VpcSecurityGroupIds:
+        - !Ref dbSecGroup
+      Tags:
+        - Key: Name
+          Value: !Join
+            - '-'
+            - - !Ref AWS::StackName
+              - DBCluster
+        - Key: CostTag
+          Value: !Ref AWS::StackName
+  dbInstance:
+    Type: AWS::RDS::DBInstance
+    Properties:
+      VPCSecurityGroups:
+        Fn::If:
+          - isAurora
+          - !Ref AWS::NoValue
+          - - !Ref dbSecGroup
+      StorageType:
+        Fn::If:
+          - isAurora
+          - !Ref AWS::NoValue
+          - gp2
+      AllocatedStorage:
+        Fn::If:
+          - isAurora
+          - !Ref AWS::NoValue
+          - !Ref dbStorageSize
+      MaxAllocatedStorage:
+        Fn::If:
+          - disableAutoScaleStorage
+          - !Ref AWS::NoValue
+          - !Ref dbStorageMaxSize
+      DBInstanceClass: !Ref dbInstanceType
+      Engine: !Ref dbEngine
+      EngineVersion: !Join
+        - '.'
+        - - !Ref dbEngineMajorVersion
+          - !Ref dbEngineMinorVersion
+      MasterUsername:
+        Fn::If:
+          - isAurora
+          - !Ref AWS::NoValue
+          - !Ref dbUsername
+      MasterUserPassword:
+        Fn::If:
+          - isAurora
+          - !Ref AWS::NoValue
+          - !Ref dbPassword
+      DBParameterGroupName: !Ref dbParamGroup
+      DBName:
+        Fn::If:
+          - isAurora
+          - !Ref AWS::NoValue
+          - !Ref dbName
+      DBSubnetGroupName: !Ref dbSubnetGroup
+      PubliclyAccessible: false
+      MultiAZ:
+        Fn::If:
+          - isAurora
+          - !Ref AWS::NoValue
+          - !Ref isMultiAz
+      DBClusterIdentifier:
+        Fn::If:
+          - isAurora
+          - !Ref dbCluster
+          - !Ref AWS::NoValue
+      Tags:
+        - Key: Name
+          Value: !Join
+            - '-'
+            - - !Ref AWS::StackName
+              - DBInstance
+        - Key: CostTag
+          Value: !Ref AWS::StackName
+  subDbInstance:
+    Type: AWS::RDS::DBInstance
+    Condition: isAurora
+    Properties:
+      DBInstanceClass: !Ref dbInstanceType
+      Engine: !Ref dbEngine
+      EngineVersion: !Join
+        - '.'
+        - - !Ref dbEngineMajorVersion
+          - !Ref dbEngineMinorVersion
+      DBParameterGroupName: !Ref dbParamGroup
+      DBSubnetGroupName: !Ref dbSubnetGroup
+      PubliclyAccessible: false
+      DBClusterIdentifier: !Ref dbCluster
+      Tags:
+        - Key: Name
+          Value: !Join
+            - '-'
+            - - !Ref AWS::StackName
+              - SubDBInstance
+        - Key: CostTag
+          Value: !Ref AWS::StackName
+Outputs:
+  dbEndpoint:
+    Value:
+      Fn::If:
+        - isAurora
+        - !GetAtt dbCluster.Endpoint.Address
+        - !GetAtt dbInstance.Endpoint.Address
+    Description: DB endpoint address
+    Export:
+      Name: !Join
+        - ':'
+        - - !Ref AWS::StackName
+          - dbEndpoint
+  dbSrcSecurityGroup:
+    Value: !Ref dbSrcSecGroup
+    Description: DB endpoint address
+    Export:
+      Name: !Join
+        - ':'
+        - - !Ref AWS::StackName
+          - dbSrcSecurityGroup

@@ -1,0 +1,400 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: ECS template
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      -
+        Label:
+          default: Common settings
+        Parameters:
+          - vpcStackName
+          - gatewaysStackName
+          - ecrStackName
+          - rdsStackName
+      -
+        Label:
+          default: DB settings
+        Parameters:
+          - dbName
+          - dbUsername
+          - dbPassword
+      -
+        Label:
+          default: Container settings
+        Parameters:
+          - containerPort
+          - cpuValue
+          - memoryValue
+          - imageTag
+Parameters:
+  vpcStackName:
+    Type: String
+    Description: VPC stack name
+  gatewaysStackName:
+    Type: String
+    Description: Gateways stack name
+  ecrStackName:
+    Type: String
+    Description: ECR stack name
+  rdsStackName:
+    Type: String
+    Description: RDS stack name
+  dbName:
+    Type: String
+    Description: Database name
+  dbUsername:
+    Type: String
+    Description: Database username
+  dbPassword:
+    Type: String
+    Description: Database password
+    NoEcho: true
+  containerPort:
+    Type: Number
+    Description: Container listening port number
+    MinValue: 1
+    MaxValue: 65535
+    Default: 3000
+  cpuValue:
+    Type: String
+    Description: CPU value for task definition
+    AllowedValues:
+      - 256
+      - 512
+      - 1024
+      - 2048
+      - 4096
+    Default: 256
+  memoryValue:
+    Type: String
+    Description: Memory value for task definition
+    AllowedValues:
+      - 512
+      - 1024
+      - 2048
+      - 3072
+      - 4096
+      - 5120
+      - 6144
+      - 7168
+      - 8192
+      - 9216
+      - 10240
+      - 11264
+      - 12288
+      - 13312
+      - 14336
+      - 15360
+      - 16384
+      - 17408
+      - 18432
+      - 19456
+      - 20480
+      - 21504
+      - 22528
+      - 23552
+      - 24576
+      - 25600
+      - 26624
+      - 27648
+      - 28672
+      - 29696
+      - 30720
+    Default: 512
+  imageTag:
+    Type: String
+    Description: Image tag name
+  desiredContainersCount:
+    Type: Number
+    Description: Desired containers count
+    MinValue: 0
+    Default: 1
+  railsMasterKey:
+    Type: String
+    Description: Rails master key
+    NoEcho: true
+Resources:
+  albSecGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: ALB security group
+      VpcId:
+        Fn::ImportValue: !Join
+          - ':'
+          - - !Ref vpcStackName
+            - vpcId
+      SecurityGroupIngress:
+        -
+          Description: HTTP IPv4
+          CidrIp: '0.0.0.0/0'
+          IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+        -
+          Description: HTTP IPv6
+          CidrIpv6: '::/0'
+          IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+        -
+          Description: HTTPS IPv4
+          CidrIp: '0.0.0.0/0'
+          IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+        -
+          Description: HTTPS IPv6
+          CidrIpv6: '::/0'
+          IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+      Tags:
+        - Key: Name
+          Value: !Join
+            - '-'
+            - - !Ref AWS::StackName
+              - ALBSecurityGroup
+        - Key: CostTag
+          Value: !Ref AWS::StackName
+  ecsSecGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: ECS container security group
+      VpcId:
+        Fn::ImportValue: !Join
+          - ':'
+          - - !Ref vpcStackName
+            - vpcId
+      SecurityGroupIngress:
+        -
+          SourceSecurityGroupId: !Ref albSecGroup
+          IpProtocol: tcp
+          FromPort: !Ref containerPort
+          ToPort: !Ref containerPort
+      Tags:
+        - Key: Name
+          Value: !Join
+            - '-'
+            - - !Ref AWS::StackName
+              - ECSSecurityGroup
+        - Key: CostTag
+          Value: !Ref AWS::StackName
+  albTargetGroup:
+    Type: AWS::ElasticLoadBalancingV2::TargetGroup
+    Properties:
+      VpcId:
+        Fn::ImportValue: !Join
+          - ':'
+          - - !Ref vpcStackName
+            - vpcId
+      Protocol: HTTP
+      Port: !Ref containerPort
+      TargetType: ip
+      Tags:
+        - Key: Name
+          Value: !Join
+            - '-'
+            - - !Ref AWS::StackName
+              - ALBTargetGroup
+        - Key: CostTag
+          Value: !Ref AWS::StackName
+  alb:
+    Type: AWS::ElasticLoadBalancingV2::LoadBalancer
+    Properties:
+      Type: application
+      Scheme: internet-facing
+      Subnets:
+        Fn::Split:
+          - ','
+          - Fn::ImportValue: !Join
+            - ':'
+            - - !Ref vpcStackName
+              - publicSubnets
+      SecurityGroups:
+        - !Ref albSecGroup
+      LoadBalancerAttributes:
+        -
+          Key: access_logs.s3.enabled
+          Value: false
+        -
+          Key: deletion_protection.enabled
+          Value: false
+        -
+          Key: idle_timeout.timeout_seconds
+          Value: 60
+      Tags:
+        - Key: Name
+          Value: !Join
+            - '-'
+            - - !Ref AWS::StackName
+              - ALB
+        - Key: CostTag
+          Value: !Ref AWS::StackName
+  albListener:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      DefaultActions:
+        -
+          TargetGroupArn: !Ref albTargetGroup
+          Type: forward
+      LoadBalancerArn: !Ref alb
+      Port: 80
+      Protocol: HTTP
+  ecsCluster:
+    Type: AWS::ECS::Cluster
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Join
+            - '-'
+            - - !Ref AWS::StackName
+              - ECSCluster
+        - Key: CostTag
+          Value: !Ref AWS::StackName
+      ClusterName: !Join
+        - '-'
+        - - !Ref AWS::StackName
+          - cluster
+  ecsLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Join
+        - ''
+        - - '/ecs/logs/'
+          - !Ref AWS::StackName
+          - '-taskLogGroup'
+      RetentionInDays: 30
+  taskExecRole:
+    Type: AWS::IAM::Role
+    Properties:
+      Path: /
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          - Effect: Allow
+            Principal:
+              Service: ecs-tasks.amazonaws.com
+            Action: sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy
+      Tags:
+        - Key: Name
+          Value: !Join
+            - '-'
+            - - !Ref AWS::StackName
+              - TaskExecRole
+        - Key: CostTag
+          Value: !Ref AWS::StackName
+  ecsTaskDef:
+    Type: AWS::ECS::TaskDefinition
+    Properties:
+      Cpu: !Ref cpuValue
+      Memory: !Ref memoryValue
+      NetworkMode: awsvpc
+      Family: !Join
+        - '-'
+        - - !Ref AWS::StackName
+          - taskDef
+      ExecutionRoleArn: !Ref taskExecRole
+      RequiresCompatibilities:
+        - FARGATE
+      ContainerDefinitions:
+        - Image: !Join
+            - ':'
+            - - Fn::ImportValue: !Join
+                - ':'
+                - - !Ref ecrStackName
+                  - repositoryPath
+              - !Ref imageTag
+          LogConfiguration:
+            LogDriver: awslogs
+            Options:
+              awslogs-group: !Ref ecsLogGroup
+              awslogs-region: !Ref AWS::Region
+              awslogs-stream-prefix: !Ref AWS::StackName
+          Name: !Join
+            - '-'
+            - - !Ref AWS::StackName
+              - container
+          PortMappings:
+            -
+              ContainerPort: 3000
+              HostPort: 3000
+              Protocol: tcp
+          Environment:
+            - Name: RAILS_ENV
+              Value: production
+            - Name: RAILS_MASTER_KEY
+              Value: !Ref railsMasterKey
+            - Name: PROGLOG_DATABASE_NAME
+              Value: !Ref dbName
+            - Name: PROGLOG_DATABASE_USERNAME
+              Value: !Ref dbUsername
+            - Name: PROGLOG_DATABASE_HOST
+              Value:
+                Fn::ImportValue: !Join
+                  - ':'
+                  - - !Ref rdsStackName
+                    - dbEndpoint
+            - Name: PROGLOG_DATABASE_PASSWORD
+              Value: !Ref dbPassword
+            - Name: RAILS_SERVE_STATIC_FILES
+              Value: 1
+      Tags:
+        - Key: Name
+          Value: !Join
+            - '-'
+            - - !Ref AWS::StackName
+              - ECSTaskDefinition
+        - Key: CostTag
+          Value: !Ref AWS::StackName
+  ecsService:
+    Type: AWS::ECS::Service
+    Properties:
+      Cluster: !Ref ecsCluster
+      DesiredCount: !Ref desiredContainersCount
+      LaunchType: FARGATE
+      LoadBalancers:
+        -
+          ContainerPort: !Ref containerPort
+          ContainerName: !Join
+            - '-'
+            - - !Ref AWS::StackName
+              - container
+          TargetGroupArn: !Ref albTargetGroup
+      NetworkConfiguration:
+        AwsvpcConfiguration:
+          AssignPublicIp: DISABLED
+          SecurityGroups:
+            -
+              Fn::ImportValue: !Join
+                - ':'
+                - - !Ref gatewaysStackName
+                  - sourceSecGroup
+            -
+              Fn::ImportValue: !Join
+                - ':'
+                - - !Ref rdsStackName
+                  - dbSrcSecurityGroup
+            - !Ref ecsSecGroup
+          Subnets:
+            Fn::Split:
+              - ','
+              - Fn::ImportValue: !Join
+                - ':'
+                - - !Ref vpcStackName
+                  - privateSubnets
+      ServiceName: !Join
+        - '-'
+        - - !Ref AWS::StackName
+          - service
+      TaskDefinition: !Ref ecsTaskDef
+      Tags:
+        - Key: Name
+          Value: !Join
+            - '-'
+            - - !Ref AWS::StackName
+              - ECSService
+        - Key: CostTag
+          Value: !Ref AWS::StackName
+    DependsOn: albListener

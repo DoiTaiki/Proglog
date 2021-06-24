@@ -1,0 +1,1388 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Endpoints template
+Metadata:
+  AWS::CloudFormation::Interface:
+    ParameterGroups:
+      -
+        Label:
+          default: Common settings
+        Parameters:
+          - vpcStackName
+      -
+        Label:
+          default: NAT settings
+        Parameters:
+          - useNat
+          - natNum
+          - natInstanceType
+          - cpuCreditStyle
+          - natInstanceKeyPair
+      -
+        Label:
+          default: VPC endpoint settings
+        Parameters:
+          - enableS3Endpoint
+          - enableEcrImageEndpoint
+          - enableEcrApiEndpoint
+          - enableCloudWatchLogsEndpoint
+Parameters:
+  vpcStackName:
+    Type: String
+    Description: VPC stack name
+  useNat:
+    Type: String
+    Description: NAT type(None is not want to create NAT)
+    AllowedValues:
+      - None
+      - Instance
+      - Gateway
+    Default: Instance
+  natNum:
+    Type: Number
+    Description: The number of NAT instance/gateway
+    MinValue: 1
+    MaxValue: 6
+    Default: 1
+  natInstanceType:
+    Type: String
+    Description: NAT instance type
+    AllowedValues:
+      - t2.micro
+      - t3.nano
+      - t3.micro
+      - t3.small
+      - t3.medium
+      - t3.large
+      - t3.xlarge
+      - t3.2xlarge
+      - t3a.nano
+      - t3a.micro
+      - t3a.small
+      - t3a.medium
+      - t3a.large
+      - t3a.xlarge
+      - t3a.2xlarge
+      - m5.large
+      - m5.xlarge
+      - m5.2xlarge
+      - m5.4xlarge
+      - m5.8xlarge
+      - m5.12xlarge
+      - m5.16xlarge
+      - m5.24xlarge
+      - m5a.large
+      - m5a.xlarge
+      - m5a.2xlarge
+      - m5a.4xlarge
+      - m5a.8xlarge
+      - m5a.12xlarge
+      - m5a.16xlarge
+      - m5a.24xlarge
+    Default: t2.micro
+  cpuCreditStyle:
+    Type: String
+    Description: Unlimited or standard for NAT t3/t3a instance
+    AllowedValues:
+      - unlimited
+      - standard
+    Default: standard
+  natInstanceKeyPair:
+    Type: AWS::EC2::KeyPair::KeyName
+    Description: EC2 key pair name
+    Default: ''
+  enableS3Endpoint:
+    Type: String
+    Description: Whether create S3 gateway or not
+    AllowedValues:
+      - true
+      - false
+    Default: false
+  enableEcrImageEndpoint:
+    Type: String
+    Description: Whether create ECR Docker gateway or not
+    AllowedValues:
+      - true
+      - false
+    Default: false
+  enableEcrApiEndpoint:
+    Type: String
+    Description: Whether create ECR API gateway or not
+    AllowedValues:
+      - true
+      - false
+    Default: false
+  enableCloudWatchLogsEndpoint:
+    Type: String
+    Description: Whether create CloudWatch logs gateway or not
+    AllowedValues:
+      - true
+      - false
+    Default: false
+Mappings:
+  RegionConfig:
+    us-east-1:
+      azNum: 6
+      natAmiId: ami-0f690b2f134c61108
+    us-east-2:
+      azNum: 3
+      natAmiId: ami-05cb692a03cdb7a09
+    us-west-1:
+      azNum: 2
+      natAmiId: ami-065a39a3e48d40f8f
+    us-west-2:
+      azNum: 4
+      natAmiId: ami-08d79ef2c299c9676
+    ca-central-1:
+      azNum: 3
+      natAmiId: ami-0415e034d0347c856
+    ap-northeast-1:
+      azNum: 3
+      natAmiId: ami-0b46b8b3d435574db
+    ap-northeast-2:
+      azNum: 4
+      natAmiId: ami-0864a4fea0657982c
+    ap-south-1:
+      azNum: 3
+      natAmiId: ami-018a3ed0baea6d36e
+    ap-southeast-1:
+      azNum: 3
+      natAmiId: ami-0eea67423624c4e01
+    ap-southeast-2:
+      azNum: 3
+      natAmiId: ami-0a7eeea8710a7aa0d
+    eu-north-1:
+      azNum: 3
+      natAmiId: ami-0a13f47b8a78f51e3
+    eu-central-1:
+      azNum: 3
+      natAmiId: ami-09cad5d38aaa03414
+    eu-west-1:
+      azNum: 3
+      natAmiId: ami-0771766bf53706ff2
+    eu-west-2:
+      azNum: 3
+      natAmiId: ami-046589c7fe4898d28
+    eu-west-3:
+      azNum: 3
+      natAmiId: ami-04156505753e04d84
+    sa-east-1:
+      azNum: 3
+      natAmiId: ami-0221e09c3ab2bdc5a
+Conditions:
+  has3rdAz:
+    Fn::Or:
+      - Fn::Equals:
+        - Fn::FindInMap:
+          - RegionConfig
+          - !Ref AWS::Region
+          - azNum
+        - 3
+      - Fn::Equals:
+        - Fn::FindInMap:
+          - RegionConfig
+          - !Ref AWS::Region
+          - azNum
+        - 4
+      - Fn::Equals:
+        - Fn::FindInMap:
+          - RegionConfig
+          - !Ref AWS::Region
+          - azNum
+        - 5
+      - Fn::Equals:
+        - Fn::FindInMap:
+          - RegionConfig
+          - !Ref AWS::Region
+          - azNum
+        - 6
+  has4thAz:
+    Fn::Or:
+      - Fn::Equals:
+        - Fn::FindInMap:
+          - RegionConfig
+          - !Ref AWS::Region
+          - azNum
+        - 4
+      - Fn::Equals:
+        - Fn::FindInMap:
+          - RegionConfig
+          - !Ref AWS::Region
+          - azNum
+        - 5
+      - Fn::Equals:
+        - Fn::FindInMap:
+          - RegionConfig
+          - !Ref AWS::Region
+          - azNum
+        - 6
+  has5thAz:
+    Fn::Or:
+      - Fn::Equals:
+        - Fn::FindInMap:
+          - RegionConfig
+          - !Ref AWS::Region
+          - azNum
+        - 5
+      - Fn::Equals:
+        - Fn::FindInMap:
+          - RegionConfig
+          - !Ref AWS::Region
+          - azNum
+        - 6
+  has6thAz:
+    Fn::Equals:
+      - Fn::FindInMap:
+        - RegionConfig
+        - !Ref AWS::Region
+        - azNum
+      - 6
+  hasNatInstance:
+    Fn::Equals:
+      - !Ref useNat
+      - Instance
+  hasNatGateway:
+    Fn::Equals:
+      - !Ref useNat
+      - Gateway
+  hasNat:
+    Fn::Or:
+      - !Condition hasNatInstance
+      - !Condition hasNatGateway
+  isMicroInstance:
+    Fn::Or:
+      - Fn::Equals:
+        - Fn::Select:
+          - 0
+          - Fn::Split:
+            - '.'
+            - !Ref natInstanceType
+        - t3
+      - Fn::Equals:
+        - Fn::Select:
+          - 0
+          - Fn::Split:
+            - '.'
+            - !Ref natInstanceType
+        - t3a
+  has2ndNat:
+    Fn::Or:
+      - Fn::Equals:
+        - !Ref natNum
+        - 2
+      - Fn::Equals:
+        - !Ref natNum
+        - 3
+      - Fn::Equals:
+        - !Ref natNum
+        - 4
+      - Fn::Equals:
+        - !Ref natNum
+        - 5
+      - Fn::Equals:
+        - !Ref natNum
+        - 6
+  has3rdNat:
+    Fn::And:
+      - !Condition has3rdAz
+      - Fn::Or:
+        - Fn::Equals:
+          - !Ref natNum
+          - 3
+        - Fn::Equals:
+          - !Ref natNum
+          - 4
+        - Fn::Equals:
+          - !Ref natNum
+          - 5
+        - Fn::Equals:
+          - !Ref natNum
+          - 6
+  has4thNat:
+    Fn::And:
+      - !Condition has4thAz
+      - Fn::Or:
+        - Fn::Equals:
+          - !Ref natNum
+          - 4
+        - Fn::Equals:
+          - !Ref natNum
+          - 5
+        - Fn::Equals:
+          - !Ref natNum
+          - 6
+  has5thNat:
+    Fn::And:
+      - !Condition has5thAz
+      - Fn::Or:
+        - Fn::Equals:
+          - !Ref natNum
+          - 5
+        - Fn::Equals:
+          - !Ref natNum
+          - 6
+  has6thNat:
+    Fn::And:
+      - !Condition has6thAz
+      - Fn::Equals:
+        - !Ref natNum
+        - 6
+  has2ndNatInstance:
+    Fn::And:
+      - !Condition hasNatInstance
+      - !Condition has2ndNat
+  has3rdNatInstance:
+    Fn::And:
+      - !Condition hasNatInstance
+      - !Condition has3rdNat
+  has4thNatInstance:
+    Fn::And:
+      - !Condition hasNatInstance
+      - !Condition has4thNat
+  has5thNatInstance:
+    Fn::And:
+      - !Condition hasNatInstance
+      - !Condition has5thNat
+  has6thNatInstance:
+    Fn::And:
+      - !Condition hasNatInstance
+      - !Condition has6thNat
+  hasNatInstanceKeyPair:
+    Fn::Not:
+      - Fn::Equals:
+        - !Ref natInstanceKeyPair
+        - ''
+  has2ndNatGateway:
+    Fn::And:
+      - !Condition hasNatGateway
+      - !Condition has2ndNat
+  has3rdNatGateway:
+    Fn::And:
+      - !Condition hasNatGateway
+      - !Condition has3rdNat
+  has4thNatGateway:
+    Fn::And:
+      - !Condition hasNatGateway
+      - !Condition has4thNat
+  has5thNatGateway:
+    Fn::And:
+      - !Condition hasNatGateway
+      - !Condition has5thNat
+  has6thNatGateway:
+    Fn::And:
+      - !Condition hasNatGateway
+      - !Condition has6thNat
+  has3rdNatRoute:
+    Fn::And:
+      - !Condition hasNat
+      - !Condition has3rdAz
+  has4thNatRoute:
+    Fn::And:
+      - !Condition hasNat
+      - !Condition has4thAz
+  has5thNatRoute:
+    Fn::And:
+      - !Condition hasNat
+      - !Condition has5thAz
+  has6thNatRoute:
+    Fn::And:
+      - !Condition hasNat
+      - !Condition has6thAz
+  isSubnet4Route2:
+    Fn::And:
+      - !Condition has2ndNat
+      - Fn::Not:
+        - !Condition has3rdNat
+  isSubnet5Route2:
+    Fn::And:
+      - !Condition has3rdNat
+      - Fn::Not:
+        - !Condition has4thNat
+  isSubnet6Route2:
+    Fn::Or:
+      - !Condition isSubnet4Route2
+      - Fn::And:
+        - !Condition has4thNat
+        - Fn::Not:
+          - !Condition has5thNat
+  hasS3Endpoint:
+    Fn::Equals:
+      - !Ref enableS3Endpoint
+      - true
+  hasEcrImageEndpoint:
+    Fn::Equals:
+      - !Ref enableEcrImageEndpoint
+      - true
+  hasEcrApiEndpoint:
+    Fn::Equals:
+      - !Ref enableEcrApiEndpoint
+      - true
+  hasCloudWatchLogsEndpoint:
+    Fn::Equals:
+      - !Ref enableCloudWatchLogsEndpoint
+      - true
+  hasInterfaceEndpoints:
+    Fn::Or:
+      - !Condition hasEcrImageEndpoint
+      - !Condition hasEcrApiEndpoint
+      - !Condition hasCloudWatchLogsEndpoint
+Resources:
+  srcSecGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Private subnet src security group
+      VpcId:
+        Fn::ImportValue: !Join
+          - ':'
+          - - !Ref vpcStackName
+            - vpcId
+      Tags:
+        - Key: Name
+          Value: !Join
+            - '-'
+            - - !Ref AWS::StackName
+              - SourceSecurityGroup
+        - Key: CostTag
+          Value: !Ref AWS::StackName
+  natInstanceSecGroup:
+    Type: AWS::EC2::SecurityGroup
+    Condition: hasNatInstance
+    Properties:
+      GroupDescription: NAT instance security group
+      VpcId:
+        Fn::ImportValue: !Join
+          - ':'
+          - - !Ref vpcStackName
+            - vpcId
+      SecurityGroupIngress:
+        -
+          CidrIp: 0.0.0.0/0
+          Description: SSH access from IPv4
+          IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+        -
+          CidrIpv6: ::/0
+          Description: SSH access from IPv6
+          IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+        -
+          SourceSecurityGroupId: !Ref srcSecGroup
+          Description: NAT access for TCP
+          IpProtocol: tcp
+          FromPort: 0
+          ToPort: 65535
+        -
+          SourceSecurityGroupId: !Ref srcSecGroup
+          Description: NAT access for UDP
+          IpProtocol: udp
+          FromPort: 0
+          ToPort: 65535
+      Tags:
+        - Key: Name
+          Value: !Join
+            - '-'
+            - - !Ref AWS::StackName
+              - NatInstanceSecurityGroup
+        - Key: CostTag
+          Value: !Ref AWS::StackName
+  # See https://qiita.com/labocho/items/1ca751b09ff549a11060
+  natInstanceRole:
+    Type: AWS::IAM::Role
+    Condition: hasNatInstance
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          -
+            Effect: Allow
+            Principal:
+              Service: ec2.amazonaws.com
+            Action: 'sts:AssumeRole'
+      Policies:
+        -
+          PolicyName: allow-apply-modify-instanceatt
+          PolicyDocument:
+            Version: '2012-10-17'
+            Statement:
+              -
+                Effect: Allow
+                Action: 'ec2:ModifyInstanceAttribute'
+                Resource: '*'
+      Tags:
+        - Key: Name
+          Value: !Join
+            - '-'
+            - - !Ref AWS::StackName
+              - NatInstanceRole
+        - Key: CostTag
+          Value: !Ref AWS::StackName
+  natInstanceProfile:
+    Type: AWS::IAM::InstanceProfile
+    Condition: hasNatInstance
+    Properties:
+      Roles:
+        - !Ref natInstanceRole
+  natInstance1:
+    Type: AWS::EC2::Instance
+    Condition: hasNatInstance
+    Properties:
+      AvailabilityZone:
+        Fn::Select:
+          - 0
+          - Fn::GetAZs: !Ref AWS::Region
+      IamInstanceProfile: !Ref natInstanceProfile
+      ImageId:
+        Fn::FindInMap:
+          - RegionConfig
+          - !Ref AWS::Region
+          - natAmiId
+      InstanceType: !Ref natInstanceType
+      CreditSpecification:
+        Fn::If:
+          - isMicroInstance
+          - CPUCredits: !Ref cpuCreditStyle
+          - !Ref AWS::NoValue
+      KeyName:
+        Fn::If:
+          - hasNatInstanceKeyPair
+          - !Ref natInstanceKeyPair
+          - !Ref AWS::NoValue
+      NetworkInterfaces:
+        -
+          AssociatePublicIpAddress: true
+          DeviceIndex: 0
+          GroupSet:
+            - !Ref natInstanceSecGroup
+          SubnetId:
+            Fn::Select:
+              - 0
+              - Fn::Split:
+                - ','
+                - Fn::ImportValue: !Join
+                  - ':'
+                  - - !Ref vpcStackName
+                    - publicSubnets
+      Tags:
+        - Key: Name
+          Value: !Join
+            - '-'
+            - - !Ref AWS::StackName
+              - NatInstance1
+        - Key: CostTag
+          Value: !Ref AWS::StackName
+      UserData:
+        Fn::Base64:
+          Fn::Sub: |
+            #!/bin/bash
+            INSTANCEID=$(curl -s -m 60 http://169.254.169.254/latest/meta-data/instance-id)
+            aws --region ${AWS::Region} ec2 modify-instance-attribute --instance-id $INSTANCEID --source-dest-check "{\"Value\": false}"
+  natInstance2:
+    Type: AWS::EC2::Instance
+    Condition: has2ndNatInstance
+    Properties:
+      AvailabilityZone:
+        Fn::Select:
+          - 1
+          - Fn::GetAZs: !Ref AWS::Region
+      IamInstanceProfile: !Ref natInstanceProfile
+      ImageId:
+        Fn::FindInMap:
+          - RegionConfig
+          - !Ref AWS::Region
+          - natAmiId
+      InstanceType: !Ref natInstanceType
+      CreditSpecification:
+        Fn::If:
+          - isMicroInstance
+          - CPUCredits: !Ref cpuCreditStyle
+          - !Ref AWS::NoValue
+      KeyName:
+        Fn::If:
+          - hasNatInstanceKeyPair
+          - !Ref natInstanceKeyPair
+          - !Ref AWS::NoValue
+      NetworkInterfaces:
+        -
+          AssociatePublicIpAddress: true
+          DeviceIndex: 0
+          GroupSet:
+            - !Ref natInstanceSecGroup
+          SubnetId:
+            Fn::Select:
+              - 1
+              - Fn::Split:
+                - ','
+                - Fn::ImportValue: !Join
+                  - ':'
+                  - - !Ref vpcStackName
+                    - publicSubnets
+      Tags:
+        - Key: Name
+          Value: !Join
+            - '-'
+            - - !Ref AWS::StackName
+              - NatInstance2
+        - Key: CostTag
+          Value: !Ref AWS::StackName
+      UserData:
+        Fn::Base64:
+          Fn::Sub: |
+            #!/bin/bash
+            INSTANCEID=$(curl -s -m 60 http://169.254.169.254/latest/meta-data/instance-id)
+            aws --region ${AWS::Region} ec2 modify-instance-attribute --instance-id $INSTANCEID --source-dest-check "{\"Value\": false}"
+  natInstance3:
+    Type: AWS::EC2::Instance
+    Condition: has3rdNatInstance
+    Properties:
+      AvailabilityZone:
+        Fn::Select:
+          - 2
+          - Fn::GetAZs: !Ref AWS::Region
+      IamInstanceProfile: !Ref natInstanceProfile
+      ImageId:
+        Fn::FindInMap:
+          - RegionConfig
+          - !Ref AWS::Region
+          - natAmiId
+      InstanceType: !Ref natInstanceType
+      CreditSpecification:
+        Fn::If:
+          - isMicroInstance
+          - CPUCredits: !Ref cpuCreditStyle
+          - !Ref AWS::NoValue
+      KeyName:
+        Fn::If:
+          - hasNatInstanceKeyPair
+          - !Ref natInstanceKeyPair
+          - !Ref AWS::NoValue
+      NetworkInterfaces:
+        -
+          AssociatePublicIpAddress: true
+          DeviceIndex: 0
+          GroupSet:
+            - !Ref natInstanceSecGroup
+          SubnetId:
+            Fn::Select:
+              - 2
+              - Fn::Split:
+                - ','
+                - Fn::ImportValue: !Join
+                  - ':'
+                  - - !Ref vpcStackName
+                    - publicSubnets
+      Tags:
+        - Key: Name
+          Value: !Join
+            - '-'
+            - - !Ref AWS::StackName
+              - NatInstance3
+        - Key: CostTag
+          Value: !Ref AWS::StackName
+      UserData:
+        Fn::Base64:
+          Fn::Sub: |
+            #!/bin/bash
+            INSTANCEID=$(curl -s -m 60 http://169.254.169.254/latest/meta-data/instance-id)
+            aws --region ${AWS::Region} ec2 modify-instance-attribute --instance-id $INSTANCEID --source-dest-check "{\"Value\": false}"
+  natInstance4:
+    Type: AWS::EC2::Instance
+    Condition: has4thNatInstance
+    Properties:
+      AvailabilityZone:
+        Fn::Select:
+          - 3
+          - Fn::GetAZs: !Ref AWS::Region
+      IamInstanceProfile: !Ref natInstanceProfile
+      ImageId:
+        Fn::FindInMap:
+          - RegionConfig
+          - !Ref AWS::Region
+          - natAmiId
+      InstanceType: !Ref natInstanceType
+      CreditSpecification:
+        Fn::If:
+          - isMicroInstance
+          - CPUCredits: !Ref cpuCreditStyle
+          - !Ref AWS::NoValue
+      KeyName:
+        Fn::If:
+          - hasNatInstanceKeyPair
+          - !Ref natInstanceKeyPair
+          - !Ref AWS::NoValue
+      NetworkInterfaces:
+        -
+          AssociatePublicIpAddress: true
+          DeviceIndex: 0
+          GroupSet:
+            - !Ref natInstanceSecGroup
+          SubnetId:
+            Fn::Select:
+              - 3
+              - Fn::Split:
+                - ','
+                - Fn::ImportValue: !Join
+                  - ':'
+                  - - !Ref vpcStackName
+                    - publicSubnets
+      Tags:
+        - Key: Name
+          Value: !Join
+            - '-'
+            - - !Ref AWS::StackName
+              - NatInstance4
+        - Key: CostTag
+          Value: !Ref AWS::StackName
+      UserData:
+        Fn::Base64:
+          Fn::Sub: |
+            #!/bin/bash
+            INSTANCEID=$(curl -s -m 60 http://169.254.169.254/latest/meta-data/instance-id)
+            aws --region ${AWS::Region} ec2 modify-instance-attribute --instance-id $INSTANCEID --source-dest-check "{\"Value\": false}"
+  natInstance5:
+    Type: AWS::EC2::Instance
+    Condition: has5thNatInstance
+    Properties:
+      AvailabilityZone:
+        Fn::Select:
+          - 4
+          - Fn::GetAZs: !Ref AWS::Region
+      IamInstanceProfile: !Ref natInstanceProfile
+      ImageId:
+        Fn::FindInMap:
+          - RegionConfig
+          - !Ref AWS::Region
+          - natAmiId
+      InstanceType: !Ref natInstanceType
+      CreditSpecification:
+        Fn::If:
+          - isMicroInstance
+          - CPUCredits: !Ref cpuCreditStyle
+          - !Ref AWS::NoValue
+      KeyName:
+        Fn::If:
+          - hasNatInstanceKeyPair
+          - !Ref natInstanceKeyPair
+          - !Ref AWS::NoValue
+      NetworkInterfaces:
+        -
+          AssociatePublicIpAddress: true
+          DeviceIndex: 0
+          GroupSet:
+            - !Ref natInstanceSecGroup
+          SubnetId:
+            Fn::Select:
+              - 4
+              - Fn::Split:
+                - ','
+                - Fn::ImportValue: !Join
+                  - ':'
+                  - - !Ref vpcStackName
+                    - publicSubnets
+      Tags:
+        - Key: Name
+          Value: !Join
+            - '-'
+            - - !Ref AWS::StackName
+              - NatInstance5
+        - Key: CostTag
+          Value: !Ref AWS::StackName
+      UserData:
+        Fn::Base64:
+          Fn::Sub: |
+            #!/bin/bash
+            INSTANCEID=$(curl -s -m 60 http://169.254.169.254/latest/meta-data/instance-id)
+            aws --region ${AWS::Region} ec2 modify-instance-attribute --instance-id $INSTANCEID --source-dest-check "{\"Value\": false}"
+  natInstance6:
+    Type: AWS::EC2::Instance
+    Condition: has6thNatInstance
+    Properties:
+      AvailabilityZone:
+        Fn::Select:
+          - 5
+          - Fn::GetAZs: !Ref AWS::Region
+      IamInstanceProfile: !Ref natInstanceProfile
+      ImageId:
+        Fn::FindInMap:
+          - RegionConfig
+          - !Ref AWS::Region
+          - natAmiId
+      InstanceType: !Ref natInstanceType
+      CreditSpecification:
+        Fn::If:
+          - isMicroInstance
+          - CPUCredits: !Ref cpuCreditStyle
+          - !Ref AWS::NoValue
+      KeyName:
+        Fn::If:
+          - hasNatInstanceKeyPair
+          - !Ref natInstanceKeyPair
+          - !Ref AWS::NoValue
+      NetworkInterfaces:
+        -
+          AssociatePublicIpAddress: true
+          DeviceIndex: 0
+          GroupSet:
+            - !Ref natInstanceSecGroup
+          SubnetId:
+            Fn::Select:
+              - 5
+              - Fn::Split:
+                - ','
+                - Fn::ImportValue: !Join
+                  - ':'
+                  - - !Ref vpcStackName
+                    - publicSubnets
+      Tags:
+        - Key: Name
+          Value: !Join
+            - '-'
+            - - !Ref AWS::StackName
+              - NatInstance6
+        - Key: CostTag
+          Value: !Ref AWS::StackName
+      UserData:
+        Fn::Base64:
+          Fn::Sub: |
+            #!/bin/bash
+            INSTANCEID=$(curl -s -m 60 http://169.254.169.254/latest/meta-data/instance-id)
+            aws --region ${AWS::Region} ec2 modify-instance-attribute --instance-id $INSTANCEID --source-dest-check "{\"Value\": false}"
+  natGatewayEIP1:
+    Type: AWS::EC2::EIP
+    Condition: hasNatGateway
+    Properties:
+      Domain: vpc
+      Tags:
+        - Key: Name
+          Value: !Join
+            - '-'
+            - - !Ref AWS::StackName
+              - NatGatewayEIP1
+        - Key: CostTag
+          Value: !Ref AWS::StackName
+  natGateway1:
+    Type: AWS::EC2::NatGateway
+    Condition: hasNatGateway
+    Properties:
+      AllocationId: !Ref natGatewayEIP1
+      SubnetId:
+        Fn::Select:
+          - 0
+          - Fn::Split:
+            - ','
+            - Fn::ImportValue: !Join
+              - ':'
+              - - !Ref vpcStackName
+                - publicSubnets
+      Tags:
+        - Key: Name
+          Value: !Join
+            - '-'
+            - - !Ref AWS::StackName
+              - NatGateway1
+        - Key: CostTag
+          Value: !Ref AWS::StackName
+  natGatewayEIP2:
+    Type: AWS::EC2::EIP
+    Condition: has2ndNatGateway
+    Properties:
+      Domain: vpc
+      Tags:
+        - Key: Name
+          Value: !Join
+            - '-'
+            - - !Ref AWS::StackName
+              - NatGatewayEIP2
+        - Key: CostTag
+          Value: !Ref AWS::StackName
+  natGateway2:
+    Type: AWS::EC2::NatGateway
+    Condition: has2ndNatGateway
+    Properties:
+      AllocationId: !Ref natGatewayEIP2
+      SubnetId:
+        Fn::Select:
+          - 1
+          - Fn::Split:
+            - ','
+            - Fn::ImportValue: !Join
+              - ':'
+              - - !Ref vpcStackName
+                - publicSubnets
+      Tags:
+        - Key: Name
+          Value: !Join
+            - '-'
+            - - !Ref AWS::StackName
+              - NatGateway2
+        - Key: CostTag
+          Value: !Ref AWS::StackName
+  natGatewayEIP3:
+    Type: AWS::EC2::EIP
+    Condition: has3rdNatGateway
+    Properties:
+      Domain: vpc
+      Tags:
+        - Key: Name
+          Value: !Join
+            - '-'
+            - - !Ref AWS::StackName
+              - NatGatewayEIP3
+        - Key: CostTag
+          Value: !Ref AWS::StackName
+  natGateway3:
+    Type: AWS::EC2::NatGateway
+    Condition: has3rdNatGateway
+    Properties:
+      AllocationId: !Ref natGatewayEIP3
+      SubnetId:
+        Fn::Select:
+          - 2
+          - Fn::Split:
+            - ','
+            - Fn::ImportValue: !Join
+              - ':'
+              - - !Ref vpcStackName
+                - publicSubnets
+      Tags:
+        - Key: Name
+          Value: !Join
+            - '-'
+            - - !Ref AWS::StackName
+              - NatGateway3
+        - Key: CostTag
+          Value: !Ref AWS::StackName
+  natGatewayEIP4:
+    Type: AWS::EC2::EIP
+    Condition: has4thNatGateway
+    Properties:
+      Domain: vpc
+      Tags:
+        - Key: Name
+          Value: !Join
+            - '-'
+            - - !Ref AWS::StackName
+              - NatGatewayEIP4
+        - Key: CostTag
+          Value: !Ref AWS::StackName
+  natGateway4:
+    Type: AWS::EC2::NatGateway
+    Condition: has4thNatGateway
+    Properties:
+      AllocationId: !Ref natGatewayEIP4
+      SubnetId:
+        Fn::Select:
+          - 3
+          - Fn::Split:
+            - ','
+            - Fn::ImportValue: !Join
+              - ':'
+              - - !Ref vpcStackName
+                - publicSubnets
+      Tags:
+        - Key: Name
+          Value: !Join
+            - '-'
+            - - !Ref AWS::StackName
+              - NatGateway4
+        - Key: CostTag
+          Value: !Ref AWS::StackName
+  natGatewayEIP5:
+    Type: AWS::EC2::EIP
+    Condition: has5thNatGateway
+    Properties:
+      Domain: vpc
+      Tags:
+        - Key: Name
+          Value: !Join
+            - '-'
+            - - !Ref AWS::StackName
+              - NatGatewayEIP5
+        - Key: CostTag
+          Value: !Ref AWS::StackName
+  natGateway5:
+    Type: AWS::EC2::NatGateway
+    Condition: has5thNatGateway
+    Properties:
+      AllocationId: !Ref natGatewayEIP5
+      SubnetId:
+        Fn::Select:
+          - 4
+          - Fn::Split:
+            - ','
+            - Fn::ImportValue: !Join
+              - ':'
+              - - !Ref vpcStackName
+                - publicSubnets
+      Tags:
+        - Key: Name
+          Value: !Join
+            - '-'
+            - - !Ref AWS::StackName
+              - NatGateway5
+        - Key: CostTag
+          Value: !Ref AWS::StackName
+  natGatewayEIP6:
+    Type: AWS::EC2::EIP
+    Condition: has6thNatGateway
+    Properties:
+      Domain: vpc
+      Tags:
+        - Key: Name
+          Value: !Join
+            - '-'
+            - - !Ref AWS::StackName
+              - NatGatewayEIP6
+        - Key: CostTag
+          Value: !Ref AWS::StackName
+  natGateway6:
+    Type: AWS::EC2::NatGateway
+    Condition: has6thNatGateway
+    Properties:
+      AllocationId: !Ref natGatewayEIP6
+      SubnetId:
+        Fn::Select:
+          - 5
+          - Fn::Split:
+            - ','
+            - Fn::ImportValue: !Join
+              - ':'
+              - - !Ref vpcStackName
+                - publicSubnets
+      Tags:
+        - Key: Name
+          Value: !Join
+            - '-'
+            - - !Ref AWS::StackName
+              - NatGateway6
+        - Key: CostTag
+          Value: !Ref AWS::StackName
+  natRoute1:
+    Type: AWS::EC2::Route
+    Condition: hasNat
+    Properties:
+      RouteTableId:
+        Fn::Select:
+          - 0
+          - Fn::Split:
+            - ','
+            - Fn::ImportValue: !Join
+              - ':'
+              - - !Ref vpcStackName
+                - privateRouteTables
+      DestinationCidrBlock: '0.0.0.0/0'
+      InstanceId:
+        Fn::If:
+          - hasNatInstance
+          - !Ref natInstance1
+          - !Ref AWS::NoValue
+      NatGatewayId:
+        Fn::If:
+          - hasNatGateway
+          - !Ref natGateway1
+          - !Ref AWS::NoValue
+  natRoute2:
+    Type: AWS::EC2::Route
+    Condition: hasNat
+    Properties:
+      RouteTableId:
+        Fn::Select:
+          - 1
+          - Fn::Split:
+            - ','
+            - Fn::ImportValue: !Join
+              - ':'
+              - - !Ref vpcStackName
+                - privateRouteTables
+      DestinationCidrBlock: '0.0.0.0/0'
+      InstanceId:
+        Fn::If:
+          - hasNatInstance
+          - Fn::If:
+            - has2ndNat
+            - !Ref natInstance2
+            - !Ref natInstance1
+          - !Ref AWS::NoValue
+      NatGatewayId:
+        Fn::If:
+          - hasNatGateway
+          - Fn::If:
+            - has2ndNat
+            - !Ref natGateway2
+            - !Ref natGateway1
+          - !Ref AWS::NoValue
+  natRoute3:
+    Type: AWS::EC2::Route
+    Condition: has3rdNatRoute
+    Properties:
+      RouteTableId:
+        Fn::Select:
+          - 2
+          - Fn::Split:
+            - ','
+            - Fn::ImportValue: !Join
+              - ':'
+              - - !Ref vpcStackName
+                - privateRouteTables
+      DestinationCidrBlock: '0.0.0.0/0'
+      InstanceId:
+        Fn::If:
+          - hasNatInstance
+          - Fn::If:
+            - has3rdNat
+            - !Ref natInstance3
+            - !Ref natInstance1
+          - !Ref AWS::NoValue
+      NatGatewayId:
+        Fn::If:
+          - hasNatGateway
+          - Fn::If:
+            - has3rdNat
+            - !Ref natGateway3
+            - !Ref natGateway1
+          - !Ref AWS::NoValue
+  natRoute4:
+    Type: AWS::EC2::Route
+    Condition: has4thNatRoute
+    Properties:
+      RouteTableId:
+        Fn::Select:
+          - 3
+          - Fn::Split:
+            - ','
+            - Fn::ImportValue: !Join
+              - ':'
+              - - !Ref vpcStackName
+                - privateRouteTables
+      DestinationCidrBlock: '0.0.0.0/0'
+      InstanceId:
+        Fn::If:
+          - hasNatInstance
+          - Fn::If:
+            - has4thNat
+            - !Ref natInstance4
+            - Fn::If:
+              - isSubnet4Route2
+              - !Ref natInstance2
+              - !Ref natInstance1
+          - !Ref AWS::NoValue
+      NatGatewayId:
+        Fn::If:
+          - hasNatGateway
+          - Fn::If:
+            - has4thNat
+            - !Ref natGateway4
+            - Fn::If:
+              - isSubnet4Route2
+              - !Ref natGateway2
+              - !Ref natGateway1
+          - !Ref AWS::NoValue
+  natRoute5:
+    Type: AWS::EC2::Route
+    Condition: has5thNatRoute
+    Properties:
+      RouteTableId:
+        Fn::Select:
+          - 4
+          - Fn::Split:
+            - ','
+            - Fn::ImportValue: !Join
+              - ':'
+              - - !Ref vpcStackName
+                - privateRouteTables
+      DestinationCidrBlock: '0.0.0.0/0'
+      InstanceId:
+        Fn::If:
+          - hasNatInstance
+          - Fn::If:
+            - has5thNat
+            - !Ref natInstance5
+            - Fn::If:
+              - isSubnet5Route2
+              - !Ref natInstance2
+              - !Ref natInstance1
+          - !Ref AWS::NoValue
+      NatGatewayId:
+        Fn::If:
+          - hasNatGateway
+          - Fn::If:
+            - has5thNat
+            - !Ref natGateway5
+            - Fn::If:
+              - isSubnet5Route2
+              - !Ref natGateway2
+              - !Ref natGateway1
+          - !Ref AWS::NoValue
+  natRoute6:
+    Type: AWS::EC2::Route
+    Condition: has6thNatRoute
+    Properties:
+      RouteTableId:
+        Fn::Select:
+          - 5
+          - Fn::Split:
+            - ','
+            - Fn::ImportValue: !Join
+              - ':'
+              - - !Ref vpcStackName
+                - privateRouteTables
+      DestinationCidrBlock: '0.0.0.0/0'
+      InstanceId:
+        Fn::If:
+          - hasNatInstance
+          - Fn::If:
+            - has6thNat
+            - !Ref natInstance6
+            - Fn::If:
+              - isSubnet5Route2
+              - !Ref natInstance3
+              - Fn::If:
+                - isSubnet6Route2
+                - !Ref natInstance2
+                - !Ref natInstance1
+          - !Ref AWS::NoValue
+      NatGatewayId:
+        Fn::If:
+          - hasNatGateway
+          - Fn::If:
+            - has6thNat
+            - !Ref natGateway6
+            - Fn::If:
+              - isSubnet5Route2
+              - !Ref natGateway3
+              - Fn::If:
+                - isSubnet6Route2
+                - !Ref natGateway2
+                - !Ref natGateway1
+          - !Ref AWS::NoValue
+  s3Endpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Condition: hasS3Endpoint
+    Properties:
+      VpcId:
+        Fn::ImportValue: !Join
+          - ':'
+          - - !Ref vpcStackName
+            - vpcId
+      VpcEndpointType: Gateway
+      ServiceName: !Join
+        - '.'
+        - - com.amazonaws
+          - !Ref AWS::Region
+          - s3
+      RouteTableIds:
+        Fn::Split:
+          - ','
+          - Fn::ImportValue: !Join
+            - ':'
+            - - !Ref vpcStackName
+              - privateRouteTables
+  intarfaceEndpointsSecGroup:
+    Type: AWS::EC2::SecurityGroup
+    Condition: hasInterfaceEndpoints
+    Properties:
+      GroupDescription: VPC endpoints security group
+      VpcId:
+        Fn::ImportValue: !Join
+          - ':'
+          - - !Ref vpcStackName
+            - vpcId
+      SecurityGroupIngress:
+        -
+          SourceSecurityGroupId: !Ref srcSecGroup
+          Description: VPC endpoint access
+          IpProtocol: tcp
+          FromPort: 443
+          ToPort: 443
+      Tags:
+        - Key: Name
+          Value: !Join
+            - '-'
+            - - !Ref AWS::StackName
+              - InterfaceEndpointsSecurityGroup
+        - Key: CostTag
+          Value: !Ref AWS::StackName
+  ecrImageEndpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Condition: hasEcrImageEndpoint
+    Properties:
+      VpcId:
+        Fn::ImportValue: !Join
+          - ':'
+          - - !Ref vpcStackName
+            - vpcId
+      VpcEndpointType: Interface
+      ServiceName: !Join
+        - '.'
+        - - com.amazonaws
+          - !Ref AWS::Region
+          - ecr.dkr
+      SecurityGroupIds:
+        - !Ref intarfaceEndpointsSecGroup
+      PrivateDnsEnabled: true
+      SubnetIds:
+        Fn::Split:
+          - ','
+          - Fn::ImportValue: !Join
+            - ':'
+            - - !Ref vpcStackName
+              - privateSubnets
+  ecrApiEndpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Condition: hasEcrApiEndpoint
+    Properties:
+      VpcId:
+        Fn::ImportValue: !Join
+          - ':'
+          - - !Ref vpcStackName
+            - vpcId
+      VpcEndpointType: Interface
+      ServiceName: !Join
+        - '.'
+        - - com.amazonaws
+          - !Ref AWS::Region
+          - ecr.api
+      SecurityGroupIds:
+        - !Ref intarfaceEndpointsSecGroup
+      PrivateDnsEnabled: true
+      SubnetIds:
+        Fn::Split:
+          - ','
+          - Fn::ImportValue: !Join
+            - ':'
+            - - !Ref vpcStackName
+              - privateSubnets
+  cloudWatchLogsEndpoint:
+    Type: AWS::EC2::VPCEndpoint
+    Condition: hasCloudWatchLogsEndpoint
+    Properties:
+      VpcId:
+        Fn::ImportValue: !Join
+          - ':'
+          - - !Ref vpcStackName
+            - vpcId
+      VpcEndpointType: Interface
+      ServiceName: !Join
+        - '.'
+        - - com.amazonaws
+          - !Ref AWS::Region
+          - logs
+      SecurityGroupIds:
+        - !Ref intarfaceEndpointsSecGroup
+      PrivateDnsEnabled: true
+      SubnetIds:
+        Fn::Split:
+          - ','
+          - Fn::ImportValue: !Join
+            - ':'
+            - - !Ref vpcStackName
+              - privateSubnets
+Outputs:
+  sourceSecGroup:
+    Description: Source security group
+    Value: !Ref srcSecGroup
+    Export:
+      Name: !Join
+        - ':'
+        - - !Ref AWS::StackName
+          - sourceSecGroup

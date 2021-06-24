@@ -1,0 +1,37 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: ECR template
+Resources:
+  repository:
+    Type: AWS::ECR::Repository
+    Properties:
+      Tags:
+        - Key: Name
+          Value: !Join
+            - '-'
+            - - !Ref AWS::StackName
+              - repository
+        - Key: CostTag
+          Value: !Ref AWS::StackName
+Outputs:
+  repositoryName:
+    Description: Repository name
+    Value: !Ref repository
+    Export:
+      Name: !Join
+        - ':'
+        - - !Ref AWS::StackName
+          - repositoryName
+  repositoryPath:
+    Description: Repository path
+    Value: !Join
+      - ''
+      - - !Ref AWS::AccountId
+        - '.dkr.ecr.'
+        - !Ref AWS::Region
+        - '.amazonaws.com/'
+        - !Ref repository
+    Export:
+      Name: !Join
+        - ':'
+        - - !Ref AWS::StackName
+          - repositoryPath

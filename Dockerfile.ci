@@ -1,0 +1,27 @@
+FROM ruby:3.0.0-alpine
+RUN apk update && apk add --no-cache \
+      bash \
+      git \
+      nodejs~=14 \
+      postgresql-client \
+      tzdata \
+      yarn~=1 \
+&& apk update && apk add --no-cache --virtual=.build-deps \
+      build-base \
+      postgresql-dev \
+&& cp /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
+WORKDIR /proglog
+COPY Gemfile /proglog/Gemfile
+COPY Gemfile.lock /proglog/Gemfile.lock
+RUN bundle install --deployment --without test development
+RUN apk del --purge .build-deps
+COPY . /proglog
+RUN bundle exec rails assets:precompile \
+# プリコンパイル後はnode_modulesは不要なのでキャッシュ(yarn chache, tmp/cache)と共に削除してイメージ容量削減
+&& yarn cache clean \
+&& rm -rf node_modules tmp/cache
+COPY entrypoint_ci.sh /usr/bin/
+RUN chmod +x /usr/bin/entrypoint_ci.sh
+ENTRYPOINT ["entrypoint_ci.sh"]
+EXPOSE 3000
+CMD ["rails", "server", "-b", "0.0.0.0"]

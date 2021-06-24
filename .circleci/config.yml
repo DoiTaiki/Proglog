@@ -1,0 +1,74 @@
+version: 2.1
+
+commands:
+  install_ruby_and_node:
+    steps:
+      - checkout
+      - ruby/install-deps
+      # Store bundle cache
+      - node/install-packages:
+          pkg-manager: yarn
+
+orbs:
+  ruby: circleci/ruby@1
+  node: circleci/node@4
+  aws-ecr: circleci/aws-ecr@7
+  aws-ecs: circleci/aws-ecs@2
+
+jobs:
+  build:
+    docker:
+      - image: cimg/ruby:3.0-node
+    steps:
+      - install_ruby_and_node
+  test:
+    parallelism: 3
+    docker:
+      - image: cimg/ruby:3.0-node
+      - image: circleci/postgres:12.6-ram
+        name: "db"
+        environment:
+          POSTGRES_USER: postgres
+          POSTGRES_DB: proglog_test
+          POSTGRES_PASSWORD: password
+    environment:
+      BUNDLE_JOBS: "3"
+      BUNDLE_RETRY: "3"
+      PGHOST: 127.0.0.1
+      PGUSER: circleci-demo-ruby
+      PGPASSWORD: ""
+      RAILS_ENV: test
+    steps:
+      - install_ruby_and_node
+      - run:
+          name: Database setup
+          command: bundle exec rails db:schema:load --trace
+      # Run rspec in parallel
+      - ruby/rspec-test
+      - ruby/rubocop-check
+      - run:
+          name: Brakeman Checks
+          command: bundle exec brakeman
+
+workflows:
+  version: 2
+  build_test_deploy:
+    jobs:
+      - build
+      - test:
+          requires:
+            - build
+      - aws-ecr/build-and-push-image:
+          requires:
+            - test
+          dockerfile: Dockerfile.ci
+          account-url: AWS_ECR_ACCOUNT_URL
+          repo: 'proglog-ecr-stack-repository-xozbyrkfdqe6'
+          tag: '${CIRCLE_SHA1}'
+      - aws-ecs/deploy-service-update:
+          requires:
+            - aws-ecr/build-and-push-image
+          family: 'proglog-ecs-stack-taskDef'
+          service-name: 'proglog-ecs-stack-service'
+          cluster-name: ' proglog-ecs-stack-cluster'
+          container-image-name-updates: 'container=proglog-ecs-stack-container, image-and-tag=${AWS_ECR_ACCOUNT_URL}/proglog-ecr-stack-repository-xozbyrkfdqe6:${CIRCLE_SHA1}'

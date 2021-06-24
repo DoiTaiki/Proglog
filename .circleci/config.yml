@@ -18,13 +18,13 @@ orbs:
 jobs:
   build:
     docker:
-      - image: cimg/ruby:3.0-node
+      - image: cimg/ruby:3.0.0-node
     steps:
       - install_ruby_and_node
   test:
     parallelism: 3
     docker:
-      - image: cimg/ruby:3.0-node
+      - image: cimg/ruby:3.0.0-node
       - image: circleci/postgres:12.6-ram
         name: "db"
         environment:
@@ -63,7 +63,7 @@ workflows:
             - test
           dockerfile: Dockerfile.ci
           account-url: AWS_ECR_ACCOUNT_URL
-          repo: 'proglog-ecr-stack-repository-xozbyrkfdqe6'
+          repo: 'proglog-ecr-stack-repository-a8fgzhwynafs'
           tag: '${CIRCLE_SHA1}'
       - aws-ecs/deploy-service-update:
           requires:
@@ -71,4 +71,4 @@ workflows:
           family: 'proglog-ecs-stack-taskDef'
           service-name: 'proglog-ecs-stack-service'
           cluster-name: ' proglog-ecs-stack-cluster'
-          container-image-name-updates: 'container=proglog-ecs-stack-container, image-and-tag=${AWS_ECR_ACCOUNT_URL}/proglog-ecr-stack-repository-xozbyrkfdqe6:${CIRCLE_SHA1}'
+          container-image-name-updates: 'container=proglog-ecs-stack-container, image-and-tag=${AWS_ECR_ACCOUNT_URL}/proglog-ecr-stack-repository-a8fgzhwynafs:${CIRCLE_SHA1}'

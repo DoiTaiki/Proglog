@@ -5,9 +5,9 @@ set -e
 rm -f /proglog/tmp/pids/server.pid
 
 # # production environment's db settings
-# RAILS_ENV=production bundle exec rails db:create
-#
-# RAILS_ENV=production bundle exec rails db:migrate
+RAILS_ENV=production bundle exec rails db:create
+
+RAILS_ENV=production bundle exec rails db:migrate
 
 # Then exec the container's main process (what's set as CMD in the Dockerfile).
 exec "$@"

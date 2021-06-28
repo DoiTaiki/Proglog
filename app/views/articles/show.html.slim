@@ -1,2 +1,18 @@
-h1 Articles#show
-p Find me in app/views/articles/show.html.slim
+h1= @article.title
+
+.nav.justify-content-end
+  = link_to '記事一覧', articles_path, class: 'nav-link'
+
+table.table-hover
+  tbody
+    tr
+      th= Article.human_attribute_name(:description)
+      td= @article.description
+    tr
+      th= Article.human_attribute_name(:created_at)
+      td= @article.created_at
+    tr
+      th= Article.human_attribute_name(:updated_at)
+      td= @article.updated_at
+
+p= simple_format(h(@article.text), {}, sanitize: false)

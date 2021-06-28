@@ -1,2 +1,18 @@
-h1 Articles#index
-p Find me in app/views/articles/index.html.slim
+h1 記事一覧
+
+- if current_user
+  = link_to '記事を書く', new_article_path, class: 'btn btn-primary'
+
+.mb-3
+table.table.table-hover
+  thead.thead-default
+    tr
+      th= Article.human_attribute_name(:title)
+      th= Article.human_attribute_name(:description)
+      th= Article.human_attribute_name(:updated_at)
+  tbody
+    - @articles.each do |article|
+      tr
+        td= link_to article.title, article
+        td= article.description
+        td= article.updated_at

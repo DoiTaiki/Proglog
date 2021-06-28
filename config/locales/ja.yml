@@ -7,6 +7,26 @@ ja:
         restrict_dependent_destroy:
           has_one: "%{record}が存在しているので削除できません"
           has_many: "%{record}が存在しているので削除できません"
+    models:
+      article: 記事
+      user: ユーザー
+    attributes:
+      article:
+        id: ID
+        title: 題名
+        description: 概要
+        text: 本文
+        created_at: 投稿日時
+        updated_at: 更新日時
+      user:
+        name: 名前
+        email: メールアドレス
+        profile: 自己紹介
+        admin: 管理者権限
+        password: パスワード
+        password_confirmation: パスワード(確認)
+        created_at: 登録日時
+        updated_at: 更新日時
   date:
     abbr_day_names:
     - 日
@@ -17,7 +37,7 @@ ja:
     - 金
     - 土
     abbr_month_names:
-    - 
+    -
     - 1月
     - 2月
     - 3月
@@ -43,7 +63,7 @@ ja:
       long: "%Y年%m月%d日(%a)"
       short: "%m/%d"
     month_names:
-    - 
+    -
     - 1月
     - 2月
     - 3月

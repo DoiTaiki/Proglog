@@ -1,2 +1,16 @@
-h1 Articles#new
-p Find me in app/views/articles/new.html.slim
+h1 記事の新規投稿
+
+.nav.justify-content-end
+  = link_to '一覧', articles_path, class: 'nav-link'
+
+= form_with model: @article do |f|
+  .form-group
+    = f.label :title
+    = f.text_field :title, class: 'form-control', id: 'article_title'
+  .form-group
+    = f.label :description
+    = f.text_field :description, class: 'form-control', id: 'article_description'
+  .form-group
+    = f.label :text
+    = f.text_area :text, rows: 30, class: 'form-control', id: 'article_text'
+  = f.submit nil, class: 'btn btn-primary'

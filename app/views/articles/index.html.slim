@@ -8,11 +8,13 @@ table.table.table-hover
   thead.thead-default
     tr
       th= Article.human_attribute_name(:title)
+      th= '投稿者名'
       th= Article.human_attribute_name(:description)
       th= Article.human_attribute_name(:updated_at)
   tbody
     - @articles.each do |article|
       tr
         td= link_to article.title, article
+        td= article.user.name
         td= article.description
         td= article.updated_at

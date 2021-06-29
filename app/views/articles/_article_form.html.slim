@@ -1,0 +1,16 @@
+- if article.errors.present?
+  ul#error_explanation
+    - article.errors.full_messages.each do |message|
+      li= message
+
+= form_with model: article do |f|
+  .form-group
+    = f.label :title
+    = f.text_field :title, class: 'form-control', id: 'article_title'
+  .form-group
+    = f.label :description
+    = f.text_field :description, class: 'form-control', id: 'article_description'
+  .form-group
+    = f.label :text
+    = f.text_area :text, rows: 30, class: 'form-control', id: 'article_text'
+  = f.submit submit_buttun_name, class: 'btn btn-primary'

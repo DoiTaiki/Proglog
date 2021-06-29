@@ -1,4 +1,4 @@
-h1 ユーザー一覧
+h1 投稿者一覧
 
 = link_to '新規登録', new_user_path, class: 'btn btn-primary'
 
@@ -10,7 +10,7 @@ table.table.table-hover
       th= User.human_attribute_name(:profile)
       th= User.human_attribute_name(:created_at)
       th= User.human_attribute_name(:updated_at)
-      - if admin_user?
+      - if current_user&.admin?
         th= User.human_attribute_name(:email)
         th= User.human_attribute_name(:admin)
         th
@@ -21,7 +21,7 @@ table.table.table-hover
         td= user.profile
         td= user.created_at
         td= user.updated_at
-        - if admin_user?
+        - if current_user&.admin?
           td= user.email
           td= user.admin? ? 'あり' : 'なし'
           td

@@ -9,10 +9,13 @@ table.table-hover
       th= Article.human_attribute_name(:description)
       td= @article.description
     tr
+      th= '投稿者名'
+      td= @article.user.name
+    tr
       th= Article.human_attribute_name(:created_at)
       td= @article.created_at
     tr
       th= Article.human_attribute_name(:updated_at)
       td= @article.updated_at
 
-p= simple_format(h(@article.text), {}, sanitize: false)
+= simple_format(h(@article.text), {}, sanitize: false)

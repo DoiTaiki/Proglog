@@ -1,13 +1,13 @@
 class UsersController < ApplicationController
   before_action :login_required, only: [:edit, :update, :destroy]
   before_action :correct_user?, only: [:edit, :update, :destroy]
+  before_action :set_user, only: [:show, :edit, :update, :destroy]
 
   def index
     @users = User.all
   end
 
   def show
-    @user = User.find(params[:id])
   end
 
   def new
@@ -25,12 +25,9 @@ class UsersController < ApplicationController
   end
 
   def edit
-    @user = User.find(params[:id])
   end
 
   def update
-    @user = User.find(params[:id])
-
     if @user.update(user_params)
       redirect_to user_path @user, notice: "ユーザー「#{@user.name}」を更新しました。"
     else
@@ -39,8 +36,6 @@ class UsersController < ApplicationController
   end
 
   def destroy
-    @user = User.find(params[:id])
-
     unless @user.admin?
       @user.destroy
       redirect_to users_path, notice: "ユーザー「#{@user.name}」を削除しました。"
@@ -56,6 +51,10 @@ class UsersController < ApplicationController
   end
 
   def correct_user?
-    redirect_to root_path, notice: "該当アカウントの編集・削除権限を持っていません。" unless User.find(params[:id]) == current_user || admin_user?
+    redirect_to root_path, notice: "該当アカウントの編集・削除権限を持っていません。" unless User.find(params[:id]) == current_user || current_user&.admin?
+  end
+
+  def set_user
+    @user = User.find(params[:id])
   end
 end

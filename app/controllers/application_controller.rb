@@ -1,5 +1,5 @@
 class ApplicationController < ActionController::Base
-  helper_method [:current_user, :admin_user?]
+  helper_method :current_user
 
   private
 
@@ -9,9 +9,5 @@ class ApplicationController < ActionController::Base
 
   def login_required
     redirect_to login_path, notice: "ログインして下さい。" unless current_user
-  end
-
-  def admin_user?
-    current_user&.admin?
   end
 end

@@ -1,12 +1,20 @@
 h1 投稿者一覧
 
+= search_form_for @q, class: 'mb-5' do |f|
+  .form-group.row
+    = f.label :name_cont, '投稿者名', class: 'col-sm-2 col-form-label'
+    .col-sm-10
+      = f.search_field :name_cont, class: 'form-control'
+  .form-group
+    = f.submit class: 'btn btn-outline-primary'
+
 = link_to '新規登録', new_user_path, class: 'btn btn-primary'
 
 .mb-3
 table.table.table-hover
   thead.thead-default
     tr
-      th= User.human_attribute_name(:name)
+      th= sort_link(@q, :name)
       th= User.human_attribute_name(:profile)
       th= User.human_attribute_name(:created_at)
       th= User.human_attribute_name(:updated_at)
@@ -15,16 +23,4 @@ table.table.table-hover
         th= User.human_attribute_name(:admin)
         th
   tbody
-    - @users.each do |user|
-      tr
-        td= link_to user.name, user
-        td= user.profile
-        td= user.created_at
-        td= user.updated_at
-        - if current_user&.admin?
-          td= user.email
-          td= user.admin? ? 'あり' : 'なし'
-          td
-            = link_to '編集', edit_user_path(user), class: 'btn btn-primary mr-3'
-            - unless user.admin?
-              = link_to '削除', user, method: :delete, data: { confirm: "ユーザー「#{user.name}」を削除します。よろしいですか？" }, class: 'btn btn-danger'
+    = render @users

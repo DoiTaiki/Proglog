@@ -19,8 +19,9 @@ ja:
         created_at: 投稿日時
         updated_at: 更新日時
       user:
-        name: 名前
+        name: 投稿者名
         email: メールアドレス
+        blog_name: ブログ名
         profile: 自己紹介
         admin: 管理者権限
         password: パスワード

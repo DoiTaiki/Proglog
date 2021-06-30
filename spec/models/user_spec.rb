@@ -6,6 +6,8 @@ RSpec.describe User, type: :model do
   let(:too_long_name_user) { build(:user, name: "a" * 51) }
   let(:no_email_user) { build(:user, email: nil) }
   let(:wrong_format_email_user) { build(:user, email: "aaa") }
+  let(:no_blog_name_user) { build(:user, blog_name: nil) }
+  let(:too_long_blog_name_user) { build(:user, blog_name: "a" * 31) }
   let(:too_long_profile_user) { build(:user, profile: "a" * 256) }
   let(:no_password_user) { build(:user, password: nil) }
   let(:too_short_password_user) { build(:user, password: "a") }
@@ -34,6 +36,16 @@ RSpec.describe User, type: :model do
   it "is invalid with a wrong_format_email" do
     wrong_format_email_user.valid?
     expect(wrong_format_email_user.errors[:email]).to include("は不正な値です")
+  end
+
+  it "is invalid without a blog name" do
+    no_blog_name_user.valid?
+    expect(no_blog_name_user.errors[:blog_name]).to include("を入力してください")
+  end
+
+  it "is invalid a too long blog name" do
+    too_long_blog_name_user.valid?
+    expect(too_long_blog_name_user.errors[:blog_name]).to include("は30文字以内で入力してください")
   end
 
   it "is invalid a too long profile" do

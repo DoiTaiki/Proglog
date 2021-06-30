@@ -3,7 +3,8 @@ class ArticlesController < ApplicationController
   before_action :set_article, only: [:edit, :update, :destroy]
 
   def index
-    @articles = Article.all.order(updated_at: :desc)
+    @q = Article.all.ransack(params[:q])
+    @articles = @q.result(distinct: true)
   end
 
   def show

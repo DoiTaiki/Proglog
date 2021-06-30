@@ -1,0 +1,11 @@
+.mb-3
+table.table.table-hover
+  thead.thead-default
+    tr
+      th= sort_link(q, :title)
+      th= User.human_attribute_name(:name)
+      th= Article.human_attribute_name(:description)
+      th= sort_link(q, :updated_at)
+      th
+  tbody
+    = render partial: 'shared/article', collection: articles

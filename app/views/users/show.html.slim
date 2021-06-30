@@ -1,7 +1,10 @@
-h1 投稿者の詳細
+h1= @user.blog_name
 
 .nav.justify-content-end
-  = link_to '一覧', users_path, class: 'nav-link'
+  = link_to '投稿者一覧', users_path, class: 'nav-link'
+
+h3 投稿者紹介
+
 table.table.table-hover
   tbody
     tr
@@ -30,3 +33,12 @@ table.table.table-hover
 - if current_user&.admin? || current_user == @user
   = link_to '編集', edit_user_path, class: 'btn btn-primary mr-3'
   = link_to '削除', @user, method: :delete, data: { confirm: "ユーザー「#{@user.name}」を削除します。よろしいですか？"}, class: 'btn btn-danger'
+
+h3= "#{@user.name}の記事一覧"
+
+= render 'shared/article_search_form', q: @q
+
+- if current_user
+  = link_to '記事を書く', new_article_path, class: 'btn btn-primary'
+
+= render 'shared/article_table', { q: @q, articles: @articles }

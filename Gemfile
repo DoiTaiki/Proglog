@@ -29,9 +29,12 @@ gem 'bcrypt', '~> 3.1.7'
 gem 'bootsnap', '>= 1.4.4', require: false
 gem 'bootstrap'
 gem 'html2slim'
+gem 'kaminari'
 gem 'listen', '~> 3.3'
 gem 'slim-rails'
 gem 'spring'
+gem 'rails_autolink'
+gem 'ransack'
 
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console

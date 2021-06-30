@@ -18,4 +18,8 @@ table.table-hover
       th= Article.human_attribute_name(:updated_at)
       td= @article.updated_at
 
-= simple_format(h(@article.text), {}, sanitize: false)
+= auto_link(simple_format(h(@article.text), {}, sanitize: false))
+
+- if @article.user == current_user
+  = link_to '編集', edit_article_path, class: 'btn btn-primary mr-3'
+  = link_to '削除', @article, method: :delete, data: { confirm: "ユーザー「#{@article.title}」を削除します。よろしいですか？"}, class: 'btn btn-danger'

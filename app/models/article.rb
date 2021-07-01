@@ -5,6 +5,8 @@ class Article < ApplicationRecord
 
   belongs_to :user
 
+  paginates_per 10
+
   def self.ransackable_attributes(auth_object = nil)
     %w[title updated_at]
   end

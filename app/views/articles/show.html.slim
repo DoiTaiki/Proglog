@@ -9,8 +9,8 @@ table.table-hover
       th= Article.human_attribute_name(:description)
       td= @article.description
     tr
-      th= '投稿者名'
-      td= @article.user.name
+      th= User.human_attribute_name(:name)
+      td= link_to @article.user.name, user_path(@article.user)
     tr
       th= Article.human_attribute_name(:created_at)
       td= @article.created_at

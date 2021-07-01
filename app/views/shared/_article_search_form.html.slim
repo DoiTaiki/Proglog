@@ -2,14 +2,14 @@
   .form-group.row
     = f.label :title_cont, '題名', class: 'col-sm-2 col-form-label'
     .col-sm-10
-      = f.search_field :title_cont, class: 'form-control'
+      = f.search_field :title_cont, class: 'form-control mb-1'
   .form-group.row
     = f.label :user_name_cont, '投稿者名', class: 'col-sm-2 col-form-label'
     .col-sm-10
-      = f.search_field :user_name_cont, class: 'form-control'
+      = f.search_field :user_name_cont, class: 'form-control mb-1'
   .form-group.row
     = f.label :updated_at_gteq, '更新日時', class: 'col-sm-2 col-form-label'
     .col-sm-10
-      = f.search_field :updated_at_gteq, class: 'form-control'
+      = f.search_field :updated_at_gteq, class: 'form-control mb-1'
   .form-group
     = f.submit class: 'btn btn-outline-primary'

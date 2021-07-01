@@ -1,4 +1,8 @@
 .mb-3
+  = paginate articles
+  - if articles
+    = page_entries_info articles
+
 table.table.table-hover
   thead.thead-default
     tr
@@ -9,3 +13,5 @@ table.table.table-hover
       th
   tbody
     = render partial: 'shared/article', collection: articles
+
+= paginate articles

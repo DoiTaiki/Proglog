@@ -4,22 +4,22 @@
       li= message
 
 = form_with model: user do |f|
-  .form-group
+  .form-group.mb-1
     = f.label :name
     = f.text_field :name, class: 'form-control'
-  .form-group
+  .form-group.mb-1
     = f.label :email
     = f.text_field :email, class: 'form-control'
-  .form-group
+  .form-group.mb-1
     = f.label :blog_name
     = f.text_field :blog_name, class: 'form-control'
-  .form-group
+  .form-group.mb-1
     = f.label :profile
     = f.text_field :profile, class: 'form-control'
-  .form-group
+  .form-group.mb-1
     = f.label :password
     = f.password_field :password, class: 'form-control'
-  .form-group
+  .form-group.mb-3
     = f.label :password_confirmation
     = f.password_field :password_confirmation, class: 'form-control'
   = f.submit nil, class: 'btn btn-primary'

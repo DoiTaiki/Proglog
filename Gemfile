@@ -29,7 +29,7 @@ gem 'bcrypt', '~> 3.1.7'
 gem 'bootsnap', '>= 1.4.4', require: false
 gem 'bootstrap'
 gem 'html2slim'
-gem 'kaminari'
+gem 'kaminari', git: 'https://github.com/kaminari/kaminari'
 gem 'listen', '~> 3.3'
 gem 'slim-rails'
 gem 'spring'
@@ -53,6 +53,7 @@ group :development do
   # Can be configured to work on production as well see: https://github.com/MiniProfiler/rack-mini-profiler/blob/master/README.md
   gem 'rack-mini-profiler', '~> 2.0'
   # Spring speeds up development by keeping your application running in the background. Read more: https://github.com/rails/spring
+  gem 'bullet'
   gem 'brakeman', require: false
   gem 'spring-commands-rspec'
   gem 'rexml'

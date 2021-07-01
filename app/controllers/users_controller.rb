@@ -5,12 +5,12 @@ class UsersController < ApplicationController
 
   def index
     @q = User.all.ransack(params[:q])
-    @users = @q.result(distinct: true)
+    @users = @q.result(distinct: true).page(params[:page])
   end
 
   def show
     @q = @user.articles.ransack(params[:q])
-    @articles = @q.result(distinct: true)
+    @articles = @q.result(distinct: true).page(params[:page])
   end
 
   def new

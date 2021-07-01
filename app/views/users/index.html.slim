@@ -4,13 +4,16 @@ h1 投稿者一覧
   .form-group.row
     = f.label :name_cont, '投稿者名', class: 'col-sm-2 col-form-label'
     .col-sm-10
-      = f.search_field :name_cont, class: 'form-control'
+      = f.search_field :name_cont, class: 'form-control mb-1'
   .form-group
     = f.submit class: 'btn btn-outline-primary'
 
-= link_to '新規登録', new_user_path, class: 'btn btn-primary'
+= link_to '新規登録', new_user_path, class: 'btn btn-primary mb-3'
 
 .mb-3
+  = paginate @users
+  = page_entries_info @users
+
 table.table.table-hover
   thead.thead-default
     tr
@@ -24,3 +27,5 @@ table.table.table-hover
         th
   tbody
     = render @users
+
+= paginate @users

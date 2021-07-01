@@ -5,7 +5,7 @@ h1= @user.blog_name
 
 h3 投稿者紹介
 
-table.table.table-hover
+table.table
   tbody
     tr
       th= User.human_attribute_name(:id)
@@ -29,16 +29,18 @@ table.table.table-hover
     tr
       th= User.human_attribute_name(:updated_at)
       td= @user.updated_at
-
-- if current_user&.admin? || current_user == @user
-  = link_to '編集', edit_user_path, class: 'btn btn-primary mr-3'
-  = link_to '削除', @user, method: :delete, data: { confirm: "ユーザー「#{@user.name}」を削除します。よろしいですか？"}, class: 'btn btn-danger'
+    - if current_user&.admin? || current_user == @user
+      tr
+        th アカウントの編集・削除
+        td
+          = link_to '編集', edit_user_path, class: 'btn btn-primary mr-3'
+          = link_to '削除', @user, method: :delete, data: { confirm: "ユーザー「#{@user.name}」を削除します。よろしいですか？"}, class: 'btn btn-danger'
 
 h3= "#{@user.name}の記事一覧"
 
 = render 'shared/article_search_form', q: @q
 
 - if current_user
-  = link_to '記事を書く', new_article_path, class: 'btn btn-primary'
+  = link_to '記事を書く', new_article_path, class: 'btn btn-primary mb-3'
 
 = render 'shared/article_table', { q: @q, articles: @articles }

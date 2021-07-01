@@ -5,10 +5,11 @@ set -e
 rm -f /proglog/tmp/pids/server.pid
 
 # # production environment's db settings(Is it needed only first time?)
-#RAILS_ENV=production bundle exec rails db:create
+RAILS_ENV=production DISABLE_DATABASE_ENVIRONMENT_CHECK=1 bundle exec rails db:drop
 
-RAILS_ENV=production DISABLE_DATABASE_ENVIRONMENT_CHECK=1 bundle exec rails db:migrate:reset
+RAILS_ENV=production bundle exec rails db:create
 
+RAILS_ENV=production bundle exec rails db:migrate
 # add admin_user
 RAILS_ENV=production bundle exec rails db:seed
 

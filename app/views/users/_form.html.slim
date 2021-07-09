@@ -3,7 +3,7 @@
     - user.errors.full_messages.each do |message|
       li= message
 
-= form_with model: user do |f|
+= form_with model: user, class: 'user-form' do |f|
   .form-group.mb-1
     = f.label :name
     = f.text_field :name, class: 'form-control'

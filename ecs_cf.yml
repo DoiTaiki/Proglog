@@ -113,6 +113,18 @@ Parameters:
     Type: String
     Description: Rails master key
     NoEcho: true
+  TwitterAPIKey:
+    Type: String
+    Description: APIkey to use twitter api function
+  TwitterAPISecretKey:
+    Type: String
+    Description: API secret key to use twitter api function
+  TwitterAccessToken:
+    Type: String
+    Description: Access token to use twitter api function
+  TwitterAccessTokenSecret:
+    Type: String
+    Description: Access token secret to use twitter api function
 Resources:
   albSecGroup:
     Type: AWS::EC2::SecurityGroup
@@ -340,6 +352,14 @@ Resources:
               Value: !Ref dbPassword
             - Name: RAILS_SERVE_STATIC_FILES
               Value: 1
+            - Name: YOUR_CONSUMER_KEY
+              Value: !Ref TwitterAPIKey
+            - Name: YOUR_CONSUMER_SECRET
+              Value: !Ref TwitterAPISecretKey
+            - Name: YOUR_ACCESS_TOKEN
+              Value: !Ref TwitterAccessToken
+            - Name: YOUR_ACCESS_SECRET
+              Value: !Ref TwitterAccessTokenSecret
       Tags:
         - Key: Name
           Value: !Join

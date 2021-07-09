@@ -16,10 +16,15 @@ html
         li.nav-item= link_to '記事一覧', articles_path, class: 'nav-link'
         li.nav-item= link_to '投稿者一覧', users_path, class: 'nav-link'
         - if current_user
+          li.nav-item= link_to current_user.blog_name, user_path(current_user), class: 'nav-link'
+          li.nav-item= link_to '記事を書く', new_article_path, class: 'nav-link'
           li.nav-item= link_to 'ログアウト', logout_path, method: :delete, class: 'nav-link'
         - else
           li.nav-item= link_to 'ログイン', login_path, class: 'nav-link'
+          li.nav-item= link_to '新規登録', new_user_path, class: 'nav-link'
     .container
       - if flash.notice.present?
         .alert.alert-success= flash.notice
+      - elsif flash.alert.present?
+        .alert.alert-danger= flash.alert
       = yield

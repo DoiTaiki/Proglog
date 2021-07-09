@@ -1,9 +1,15 @@
-tr
+tr class="#{article.user.name}-article"
   td= link_to article.title, article
-  td= link_to article.user.name, user_path(article.user)
+  td
+    -if controller_name == "users"
+      = article.user.name
+    -else
+      = link_to article.user.name, user_path(article.user)
   td= article.description
   td= article.updated_at
-  - if article.user == current_user
-    td
-      = link_to '編集', edit_article_path(article), class: 'btn btn-primary mr-3'
+  td
+    - if current_user&.admin? || current_user == article.user
+      = link_to '編集', edit_article_path(article), class: 'btn btn-primary'
+  td
+    - if current_user&.admin? || current_user == article.user
       = link_to '削除', article, method: :delete, data: { confirm: "ユーザー「#{article.title}」を削除します。よろしいですか？" }, class: 'btn btn-danger'

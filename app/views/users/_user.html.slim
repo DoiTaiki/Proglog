@@ -1,4 +1,4 @@
-tr
+tr class="#{user.name}-link"
   td= link_to user.name, user
   td= user.profile
   td= user.created_at
@@ -8,5 +8,6 @@ tr
     td= user.admin? ? 'あり' : 'なし'
     td
       = link_to '編集', edit_user_path(user), class: 'btn btn-primary mr-3'
+    td
       - unless user.admin?
         = link_to '削除', user, method: :delete, data: { confirm: "ユーザー「#{user.name}」を削除します。よろしいですか？" }, class: 'btn btn-danger'

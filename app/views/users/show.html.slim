@@ -5,7 +5,7 @@ h1= @user.blog_name
 
 h3 投稿者紹介
 
-table.table
+table.table.user-profile
   tbody
     tr
       th= User.human_attribute_name(:id)
@@ -16,10 +16,11 @@ table.table
     tr
       th= User.human_attribute_name(:profile)
       td= @user.profile
-    - if current_user&.admin?
+    - if current_user&.admin? || current_user == @user
       tr
         th= User.human_attribute_name(:email)
         td= @user.email
+    - if current_user&.admin?
       tr
         th= User.human_attribute_name(:admin)
         td= @user.admin? ? 'あり' : 'なし'
@@ -34,13 +35,14 @@ table.table
         th アカウントの編集・削除
         td
           = link_to '編集', edit_user_path, class: 'btn btn-primary mr-3'
-          = link_to '削除', @user, method: :delete, data: { confirm: "ユーザー「#{@user.name}」を削除します。よろしいですか？"}, class: 'btn btn-danger'
+          - unless @user.admin?
+            = link_to '削除', @user, method: :delete, data: { confirm: "ユーザー「#{@user.name}」を削除します。よろしいですか？"}, class: 'btn btn-danger'
 
 h3= "#{@user.name}の記事一覧"
 
 = render 'shared/article_search_form', q: @q
 
-- if current_user
+- if current_user == @user
   = link_to '記事を書く', new_article_path, class: 'btn btn-primary mb-3'
 
 = render 'shared/article_table', { q: @q, articles: @articles }

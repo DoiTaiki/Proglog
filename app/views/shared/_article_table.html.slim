@@ -1,16 +1,16 @@
 .mb-3
   = paginate articles
-  - if articles
-    = page_entries_info articles
+  = page_entries_info articles
 
-table.table.table-hover
+table.table.table-hover.article-table
   thead.thead-default
     tr
       th= sort_link(q, :title)
       th= User.human_attribute_name(:name)
       th= Article.human_attribute_name(:description)
       th= sort_link(q, :updated_at)
-      th
+      th style="width:75px"
+      th style="width:75px"
   tbody
     = render partial: 'shared/article', collection: articles
 

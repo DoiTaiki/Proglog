@@ -2,6 +2,7 @@ class UsersController < ApplicationController
   before_action :login_required, only: [:edit, :update, :destroy]
   before_action :correct_user?, only: [:edit, :update, :destroy]
   before_action :set_user, only: [:show, :edit, :update, :destroy]
+  before_action :no_login_required, only: [:new, :create]
 
   def index
     @q = User.all.ransack(params[:q])
@@ -21,7 +22,8 @@ class UsersController < ApplicationController
     @user = User.new(user_params)
 
     if @user.save
-      redirect_to users_path, notice: "ユーザー「#{@user.name}」を登録しました。"
+      session[:user_id] = @user.id
+      redirect_to user_path(@user), notice: "ユーザー「#{@user.name}」を登録しました。"
     else
       render :new
     end
@@ -32,7 +34,8 @@ class UsersController < ApplicationController
 
   def update
     if @user.update(user_params)
-      redirect_to user_path @user, notice: "ユーザー「#{@user.name}」を更新しました。"
+      flash[:notice] = "ユーザー「#{@user.name}」を更新しました。"
+      redirect_to user_path(@user), notice: "ユーザー「#{@user.name}」を更新しました。"
     else
       render :edit
     end
@@ -55,6 +58,10 @@ class UsersController < ApplicationController
 
   def correct_user?
     redirect_to root_path, notice: "該当アカウントの編集・削除権限を持っていません。" unless User.find(params[:id]) == current_user || current_user&.admin?
+  end
+
+  def no_login_required
+    redirect_to root_path, alert: "ログイン中のユーザー新規登録は行えません。" if current_user
   end
 
   def set_user

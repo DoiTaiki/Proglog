@@ -3,14 +3,18 @@
     - article.errors.full_messages.each do |message|
       li= message
 
-= form_with model: article do |f|
+= form_with model: article, class: 'form' do |f|
   .form-group.mb-1
     = f.label :title
     = f.text_field :title, class: 'form-control', id: 'article_title'
   .form-group.mb-1
     = f.label :description
     = f.text_field :description, class: 'form-control', id: 'article_description'
-  .form-group.mb-3
+  .form-group.mb-1
     = f.label :text
     = f.text_area :text, rows: 30, class: 'form-control', id: 'article_text'
-  = f.submit submit_buttun_name, class: 'btn btn-primary'
+  .form-group.mb-3
+    = f.label :twitter_announce, class: 'form-check-label' do
+      = f.check_box :twitter_announce, class: 'form-check-input'
+      | Twitterの専用アカウントによる告知機能を利用しますか？
+  = f.submit submit_button_name, class: 'btn btn-primary'

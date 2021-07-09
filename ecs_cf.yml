@@ -116,15 +116,19 @@ Parameters:
   TwitterAPIKey:
     Type: String
     Description: APIkey to use twitter api function
+    NoEcho: true
   TwitterAPISecretKey:
     Type: String
     Description: API secret key to use twitter api function
+    NoEcho: true
   TwitterAccessToken:
     Type: String
     Description: Access token to use twitter api function
+    NoEcho: true
   TwitterAccessTokenSecret:
     Type: String
     Description: Access token secret to use twitter api function
+    NoEcho: true
 Resources:
   albSecGroup:
     Type: AWS::EC2::SecurityGroup

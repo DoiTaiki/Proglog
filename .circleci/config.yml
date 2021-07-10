@@ -22,8 +22,6 @@ jobs:
       - image: cimg/ruby:3.0.0-node
     steps:
       - install_ruby_and_node
-      - browser-tools/install-chrome
-      - browser-tools/install-chromedriver
   test:
     parallelism: 3
     docker:
@@ -43,6 +41,8 @@ jobs:
       RAILS_ENV: test
     steps:
       - install_ruby_and_node
+      - browser-tools/install-chrome
+      - browser-tools/install-chromedriver
       - run:
           name: Database setup
           command: bundle exec rails db:schema:load --trace

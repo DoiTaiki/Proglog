@@ -12,6 +12,7 @@ commands:
 orbs:
   ruby: circleci/ruby@1
   node: circleci/node@4
+  browser: circleci/browser-tools@1
   aws-ecr: circleci/aws-ecr@7
   aws-ecs: circleci/aws-ecs@2
 
@@ -21,10 +22,12 @@ jobs:
       - image: cimg/ruby:3.0.0-node
     steps:
       - install_ruby_and_node
+      - browser-tools/install-chrome
+      - browser-tools/install-chromedriver
   test:
     parallelism: 3
     docker:
-      - image: cimg/ruby:3.0.0-browsers
+      - image: cimg/ruby:3.0.0-node
       - image: circleci/postgres:12.6-ram
         name: "db"
         environment:

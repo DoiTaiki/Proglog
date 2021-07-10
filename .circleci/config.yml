@@ -24,7 +24,7 @@ jobs:
   test:
     parallelism: 3
     docker:
-      - image: cimg/ruby:3.0.0-node
+      - image: cimg/ruby:3.0.0-browsers
       - image: circleci/postgres:12.6-ram
         name: "db"
         environment:

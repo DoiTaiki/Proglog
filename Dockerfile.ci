@@ -1,12 +1,6 @@
 FROM ruby:3.0.0-alpine
 RUN apk update && apk add --no-cache \
       bash \
-      # rspecのsystem testに必要
-      chromium \
-      chromium-chromedriver \
-      # 無いとsystem testで使用されるブラウザ上の日本語が□で表示される(これだけだとゴシック体のみ)
-      font-noto-cjk \
-      fontconfig \
       git \
       nodejs~=14 \
       postgresql-client \
@@ -15,13 +9,7 @@ RUN apk update && apk add --no-cache \
 && apk update && apk add --no-cache --virtual=.build-deps \
       build-base \
       postgresql-dev \
-      # pip installコマンドに必要
-      python3 \
-      python3-dev \
-      py3-pip \
 && fc-cache -fv \
-# seleniumのインストール(system test用)
-&& pip3 install -U selenium \
 && cp /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
 WORKDIR /proglog
 COPY Gemfile /proglog/Gemfile

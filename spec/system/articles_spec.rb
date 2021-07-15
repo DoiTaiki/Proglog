@@ -15,38 +15,38 @@ describe "article management system", type: :system do
       end
 
       it "displays a link of user's article title" do
-        within ".table" do
+        within ".article-table" do
           expect(page).to have_link article.title, href: article_path(article)
         end
       end
 
       it "displays a link of other_user's article title" do
-        within ".table" do
+        within ".article-table" do
           expect(page).to have_link other_article.title, href: article_path(other_article)
         end
       end
 
       it "displays a link of user's name" do
-        within ".table" do
+        within ".article-table" do
           expect(page).to have_link article.user.name, href: user_path(article.user)
         end
       end
 
       it "displays a other_user's name" do
-        within ".table" do
+        within ".article-table" do
           expect(page).to have_link other_article.user.name, href: user_path(other_article.user)
         end
       end
 
       it "displays a user's article update time" do
-        within ".table" do
-          expect(page).to have_content article.updated_at
+        within ".article-table" do
+          expect(page).to have_content time_format article.updated_at
         end
       end
 
       it "displays a other_user's article update time" do
-        within ".table" do
-          expect(page).to have_content other_article.updated_at
+        within ".article-table" do
+          expect(page).to have_content time_format other_article.updated_at
         end
       end
 
@@ -69,7 +69,7 @@ describe "article management system", type: :system do
       end
 
       it "displays a '記事一覧' link" do
-        within ".container" do
+        within ".container-fluid" do
           expect(page).to have_link "記事一覧", href: articles_path
         end
       end
@@ -81,20 +81,20 @@ describe "article management system", type: :system do
       end
 
       it "displays a link of article's author in the table" do
-        within "table" do
+        within ".article-table" do
           expect(page).to have_link article.user.name, href: user_path(article.user)
         end
       end
 
       it "displays an article's create time" do
         within "table" do
-          expect(page).to have_content article.created_at
+          expect(page).to have_content time_format article.created_at
         end
       end
 
       it "displays an article's update time" do
-        within "table" do
-          expect(page).to have_content article.updated_at
+        within ".article-table" do
+          expect(page).to have_content time_format article.updated_at
         end
       end
 
@@ -131,7 +131,7 @@ describe "article management system", type: :system do
       end
 
       it "displays a '記事を書く' button" do
-        within ".container" do
+        within ".container-fluid" do
           expect(page).to have_link "記事を書く", href: new_article_path
         end
       end
@@ -168,14 +168,14 @@ describe "article management system", type: :system do
       end
 
       it "displays '未実行' when the shown user's article wasn't tweeted for announce" do
-        within "table" do
+        within ".article-table" do
           expect(page).to have_content "未実行"
         end
       end
 
       it "displays '実行済' when the shown user's article was tweeted for announce" do
         visit article_path tweeted_article
-        within "table" do
+        within ".article-table" do
           expect(page).to have_content "実行済"
         end
       end
@@ -215,7 +215,7 @@ describe "article management system", type: :system do
       end
 
       it "displays a '記事一覧' link" do
-        within ".container" do
+        within ".container-fluid" do
           expect(page).to have_link "記事一覧", href: articles_path
         end
       end
@@ -282,7 +282,7 @@ describe "article management system", type: :system do
           within ".article-table" do
             expect(page).to have_content sample_article.title
             expect(page).to have_content sample_article.description
-            expect(page).to have_content sample_article.updated_at
+            expect(page).to have_content time_format sample_article.updated_at
           end
         end
 
@@ -325,7 +325,7 @@ describe "article management system", type: :system do
       end
 
       it "displays a '記事一覧' link" do
-        within ".container" do
+        within ".container-fluid" do
           expect(page).to have_link "記事一覧", href: articles_path
         end
       end
@@ -391,7 +391,7 @@ describe "article management system", type: :system do
           within ".article-table" do
             expect(page).to have_content article.title
             expect(page).to have_content article.description
-            expect(page).to have_content article.updated_at
+            expect(page).to have_content time_format article.updated_at
           end
         end
 
@@ -514,14 +514,14 @@ describe "article management system", type: :system do
       end
 
       it "displays '未実行' when the shown user's article wasn't tweeted for announce" do
-        within "table" do
+        within ".article-table" do
           expect(page).to have_content "未実行"
         end
       end
 
       it "displays '実行済' when the shown user's article was tweeted for announce" do
         visit article_path tweeted_article
-        within "table" do
+        within ".article-table" do
           expect(page).to have_content "実行済"
         end
       end

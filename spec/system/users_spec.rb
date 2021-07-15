@@ -14,86 +14,86 @@ describe "user management system", type: :system do
       end
 
       it "displays a link of user's name" do
-        within ".table" do
+        within ".user-table" do
           expect(page).to have_link user.name, href: user_path(user)
         end
       end
 
       it "displays a link of other_user's name" do
-        within ".table" do
+        within ".user-table" do
           expect(page).to have_link other_user.name, href: user_path(other_user)
         end
       end
 
       it "displays a link of admin_user's name" do
-        within ".table" do
+        within ".user-table" do
           expect(page).to have_link admin_user.name, href: user_path(admin_user)
         end
       end
 
       it "displays a user's profile create time" do
-        within ".table" do
-          expect(page).to have_content user.created_at
+        within ".user-table" do
+          expect(page).to have_content time_format user.created_at
         end
       end
 
       it "displays a other_user's profile create time" do
-        within ".table" do
-          expect(page).to have_content other_user.created_at
+        within ".user-table" do
+          expect(page).to have_content time_format other_user.created_at
         end
       end
 
       it "displays a admin_user's profile create time" do
-        within ".table" do
-          expect(page).to have_content admin_user.created_at
+        within ".user-table" do
+          expect(page).to have_content time_format admin_user.created_at
         end
       end
 
       it "displays a user's profile update time" do
-        within ".table" do
-          expect(page).to have_content user.updated_at
+        within ".user-table" do
+          expect(page).to have_content time_format user.updated_at
         end
       end
 
       it "displays a other_user's profile update time" do
-        within ".table" do
-          expect(page).to have_content other_user.updated_at
+        within ".user-table" do
+          expect(page).to have_content time_format other_user.updated_at
         end
       end
 
       it "displays a admin_user's profile update time" do
-        within ".table" do
-          expect(page).to have_content admin_user.updated_at
+        within ".user-table" do
+          expect(page).to have_content time_format admin_user.updated_at
         end
       end
 
       it "doesn't display a user's email" do
-        within ".table" do
+        within ".user-table" do
           expect(page).to have_no_content user.email
         end
       end
 
       it "doesn't display a other_user's email" do
-        within ".table" do
+        within ".user-table" do
           expect(page).to have_no_content other_user.email
         end
       end
 
       it "doesn't display a admin_user's email" do
-        within ".table" do
+        within ".user-table" do
           expect(page).to have_no_content admin_user.email
         end
       end
 
       it "doesn't display which user has admin authority" do
-        within ".table" do
+        within ".user-table" do
           expect(page).to have_no_content "あり"
           expect(page).to have_no_content "なし"
         end
       end
 
       it "displays a '新規登録' button" do
-        within ".container" do
+        within ".container-fluid" do
           expect(page).to have_link "新規登録", href: new_user_path
         end
       end
@@ -113,7 +113,7 @@ describe "user management system", type: :system do
       end
 
       it "displays a '投稿者一覧' link" do
-        within ".container" do
+        within ".container-fluid" do
           expect(page).to have_link "投稿者一覧", href: users_path
         end
       end
@@ -144,13 +144,13 @@ describe "user management system", type: :system do
 
       it "displays a user's account create time in the profile" do
         within ".user-profile" do
-          expect(page).to have_content user.created_at
+          expect(page).to have_content time_format user.created_at
         end
       end
 
       it "displays a user's profile update time in the profile" do
         within ".user-profile" do
-          expect(page).to have_content user.updated_at
+          expect(page).to have_content time_format user.updated_at
         end
       end
 
@@ -193,7 +193,7 @@ describe "user management system", type: :system do
 
       it "displays an article's update time" do
         within ".article-table" do
-          expect(page).to have_content article.updated_at
+          expect(page).to have_content time_format article.updated_at
         end
       end
 
@@ -216,7 +216,7 @@ describe "user management system", type: :system do
       end
 
       it "displays '投稿者一覧' link" do
-        within ".container" do
+        within ".container-fluid" do
           expect(page).to have_link "投稿者一覧", href: users_path
         end
       end
@@ -331,7 +331,7 @@ describe "user management system", type: :system do
       end
 
       it "doesn't display a '新規登録' link" do
-        within ".container" do
+        within ".container-fluid" do
           expect(page).to have_no_link "新規登録", href: new_user_path
         end
       end
@@ -362,7 +362,7 @@ describe "user management system", type: :system do
       end
 
       it "displays a '記事を書く' button" do
-        within ".container" do
+        within ".container-fluid" do
           expect(page).to have_link "記事を書く", href: new_article_path
         end
       end
@@ -385,7 +385,7 @@ describe "user management system", type: :system do
         end
 
         it "doesn't display a '記事を書く' button" do
-          within ".container" do
+          within ".container-fluid" do
             expect(page).to have_no_link "記事を書く"
           end
         end
@@ -398,7 +398,7 @@ describe "user management system", type: :system do
       end
 
       it "displays a '投稿者一覧' link" do
-        within ".container" do
+        within ".container-fluid" do
           expect(page).to have_link "投稿者一覧", href: users_path
         end
       end

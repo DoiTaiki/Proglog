@@ -15,18 +15,23 @@ h1 投稿者一覧
   = paginate @users
   = page_entries_info @users
 
-table.table.table-hover.user-table
+table.table.table-hover.text-center.user-table
   thead.thead-default
-    tr
-      th= sort_link(@q, :name)
-      th= User.human_attribute_name(:profile)
-      th= User.human_attribute_name(:created_at)
-      th= User.human_attribute_name(:updated_at)
+    tr.d-flex
       - if current_user&.admin?
-        th= User.human_attribute_name(:email)
-        th= User.human_attribute_name(:admin)
-        th style="width:75px"
-        th style="width:75px"
+        th.col-1= sort_link(@q, :name)
+        th.col-4= User.human_attribute_name(:profile)
+        th.col-1= User.human_attribute_name(:created_at)
+        th.col-1= User.human_attribute_name(:updated_at)
+        th.col-2= User.human_attribute_name(:email)
+        th.col-1= User.human_attribute_name(:admin)
+        th.col-1
+        th.col-1
+      - else
+        th.col-2= sort_link(@q, :name)
+        th.col-6= User.human_attribute_name(:profile)
+        th.col-2= User.human_attribute_name(:created_at)
+        th.col-2= User.human_attribute_name(:updated_at)
   tbody
     = render partial: 'user', collection: @users
 

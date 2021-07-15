@@ -3,28 +3,48 @@ html
   head
     title
       | Proglog
-    meta[name="viewport" content="width=device-width,initial-scale=1"]
+    meta[name="description" content="プログラミングに関するブログサイトです。気軽にご登録下さい。備忘録、tips集、技術に対する雑感etc...ご自由に!!"]
     = csrf_meta_tags
     = csp_meta_tag
     = stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload'
     = javascript_pack_tag 'application', 'data-turbolinks-track': 'reload'
   body
-    .app-title.navbar.navbar-expand-md.navbar-light.bg-light
-      .navbar-brand Proglog
-
-      ul.navbar-nav.ml-auto
-        li.nav-item= link_to '記事一覧', articles_path, class: 'nav-link'
-        li.nav-item= link_to '投稿者一覧', users_path, class: 'nav-link'
-        - if current_user
-          li.nav-item= link_to current_user.blog_name, user_path(current_user), class: 'nav-link'
-          li.nav-item= link_to '記事を書く', new_article_path, class: 'nav-link'
-          li.nav-item= link_to 'ログアウト', logout_path, method: :delete, class: 'nav-link'
-        - else
-          li.nav-item= link_to 'ログイン', login_path, class: 'nav-link'
-          li.nav-item= link_to '新規登録', new_user_path, class: 'nav-link'
-    .container
+    header
+      .app-title.navbar.navbar-expand-md.navbar-dark.bg-secondary
+        .navbar-brand
+          | Proglog
+        ul.navbar-nav.ml-1
+          li.nav-item= link_to '記事一覧', articles_path, class: 'nav-link'
+          li.nav-item= link_to '投稿者一覧', users_path, class: 'nav-link'
+          - if current_user
+            li.nav-item= link_to current_user.blog_name, user_path(current_user), class: 'nav-link'
+          li.nav-item= link_to 'Twitter', "#{@tweets.first.user.uri}", class: 'nav-link'
+        ul.navbar-nav.ml-auto
+          - if current_user
+            li.nav-item= link_to '記事を書く', new_article_path, class: 'nav-link'
+            li.nav-item= link_to 'ログアウト', logout_path, method: :delete, class: 'nav-link'
+          - else
+            li.nav-item= link_to 'ログイン', login_path, class: 'nav-link'
+            li.nav-item= link_to '新規登録', new_user_path, class: 'nav-link'
+    .container-fluid
       - if flash.notice.present?
         .alert.alert-success= flash.notice
       - elsif flash.alert.present?
         .alert.alert-danger= flash.alert
       = yield
+    footer
+      .push style='height: 250px'
+      .text-white.bg-secondary.fixed-bottom
+        p
+          | 最新のツイート(
+          = link_to "@#{@tweets.first.user.screen_name}", "#{@tweets.first.user.uri}"
+          | )
+          button class="btn btn-primary btn-sm" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="true" aria-controls="collapseExample"
+            | 表示↔︎非表示
+        .show#collapseExample
+          section.overflow-auto style='height: 200px'
+            table.table.table-hover.table-dark.table-sm.tweet-table
+              tr.d-flex
+                th.col-10= 'ツイート'
+                th.col-2= '投稿日時'
+              = render partial: 'shared/tweet', collection: @tweets

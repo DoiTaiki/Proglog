@@ -26,10 +26,10 @@ table.table.user-profile
         td= @user.admin? ? 'あり' : 'なし'
     tr
       th= User.human_attribute_name(:created_at)
-      td= @user.created_at
+      td= time_format @user.created_at
     tr
       th= User.human_attribute_name(:updated_at)
-      td= @user.updated_at
+      td= time_format @user.updated_at
     - if current_user&.admin? || current_user == @user
       tr
         th アカウントの編集・削除

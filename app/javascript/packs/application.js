@@ -7,6 +7,9 @@ import Rails from "@rails/ujs"
 import Turbolinks from "turbolinks"
 import * as ActiveStorage from "@rails/activestorage"
 import "channels"
+import "bootstrap"
+import "bootstrap/scss/bootstrap.scss"
+import "collapse_tweet_list.js"
 
 Rails.start()
 Turbolinks.start()

@@ -1,4 +1,4 @@
-tr class="#{user.name}-link d-flex" style="word-wrap:break-word;"
+tr class="#{user.name}-link d-flex" style='word-wrap:break-word;'
   - if current_user&.admin?
     td.col-1= link_to user.name, user
     td.col-4.text-left= user.profile

@@ -35,11 +35,11 @@ html
     footer
       .push style='height: 250px'
       .text-white.bg-secondary.fixed-bottom
-        p
+        p.mt-3
           | 最新のツイート(
           = link_to "@#{@tweets.first.user.screen_name}", "#{@tweets.first.user.uri}"
           | )
-          button class="btn btn-primary btn-sm" type="button" data-toggle="collapse" data-target="#collapseExample" aria-expanded="true" aria-controls="collapseExample"
+          button class='btn btn-primary btn-sm' type='button' data-toggle='collapse' data-target='#collapseExample' aria-expanded='true' aria-controls='collapseExample'
             | 表示↔︎非表示
         .show#collapseExample
           section.overflow-auto style='height: 200px'

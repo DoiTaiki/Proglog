@@ -3,25 +3,28 @@ h1= @article.title
 .nav.justify-content-end
   = link_to '記事一覧', articles_path, class: 'nav-link'
 
-table.table-hover
-  tbody
-    tr
-      th= Article.human_attribute_name(:description)
-      td= @article.description
-    tr
-      th= User.human_attribute_name(:name)
-      td= link_to @article.user.name, user_path(@article.user)
-    tr
-      th= Article.human_attribute_name(:created_at)
-      td= time_format @article.created_at
-    tr
-      th= Article.human_attribute_name(:updated_at)
-      td= time_format @article.updated_at
-    - if current_user&.admin? || current_user == @article.user
-      tr
-        th= Article.human_attribute_name(:twitter_announce)
-        td= @article.twitter_announce? ? '実行済' : '未実行'
+p.article-info
+  | 著者:
+  = link_to @article.user.name, user_path(@article.user), class: 'mr-3'
+  span.mr-3
+    | 作成日:
+    = time_format @article.created_at
+  span.mr-3
+    | 更新日:
+    = time_format @article.updated_at
+  - if current_user&.admin? || current_user == @article.user
+    span
+      | Twitterによる告知:
+      = @article.twitter_announce? ? '実行済' : '未実行'
 
+- if @article.description.present?
+  .description-area
+    h5
+      | 概要
+    p= @article.description
+
+h5
+  | 本文
 = auto_link(simple_format(h(@article.text), {}, sanitize: false))
 
 - if current_user&.admin? || current_user == @article.user

@@ -5,6 +5,9 @@ describe "article management system", type: :system do
   let(:other_user) { create(:user, name: "other_user", email: "other_user@example.com") }
   let(:admin_user) { create(:user, email: "admin_user@example.com", admin: true) }
   let!(:article) { create(:article, user: user) }
+  let(:with_description_article) { create(:article, description: "hello", user: user) }
+  let(:blank_description_article) { create(:article, description: " ", user: user) }
+  let(:no_description_article) { create(:article, description: nil, user: user) }
   let!(:other_article) { create(:article, title: "other_article's title",  user: other_user) }
   let(:tweeted_article) { create(:article, title: "tweet announce", text: "tweet announce", twitter_announce: true, user: user) }
 
@@ -80,20 +83,20 @@ describe "article management system", type: :system do
         end
       end
 
-      it "displays a link of article's author in the table" do
-        within ".article-table" do
+      it "displays a link of article's author" do
+        within ".article-info" do
           expect(page).to have_link article.user.name, href: user_path(article.user)
         end
       end
 
       it "displays an article's create time" do
-        within "table" do
+        within ".article-info" do
           expect(page).to have_content time_format article.created_at
         end
       end
 
       it "displays an article's update time" do
-        within ".article-table" do
+        within ".article-info" do
           expect(page).to have_content time_format article.updated_at
         end
       end
@@ -104,7 +107,7 @@ describe "article management system", type: :system do
 
       it "doesn't display if twitter_announce executed" do
         expect(page).to have_no_content "実行済"
-          expect(page).to have_no_content "未実行"
+        expect(page).to have_no_content "未実行"
       end
 
       it "doesn't display a '編集' button" do
@@ -113,6 +116,39 @@ describe "article management system", type: :system do
 
       it "doesn't display a '削除' button" do
         expect(page).to have_no_link "削除"
+      end
+
+      context "when article has description" do
+        before do
+          visit article_path with_description_article
+        end
+
+        it "displays description area" do
+          within ".description-area" do
+            expect(page).to have_content "概要"
+            expect(page).to have_content with_description_article.description
+          end
+        end
+      end
+
+      context "when article doesn't have description" do
+        before do
+          visit article_path no_description_article
+        end
+
+        it "doesn't display description area" do
+          expect(page).to have_no_selector ".description-area"
+        end
+      end
+
+      context "when article has blank description" do
+        before do
+          visit article_path blank_description_article
+        end
+
+        it "doesn't display description area" do
+          expect(page).to have_no_selector ".description-area"
+        end
       end
     end
   end
@@ -168,14 +204,14 @@ describe "article management system", type: :system do
       end
 
       it "displays '未実行' when the shown user's article wasn't tweeted for announce" do
-        within ".article-table" do
+        within ".article-info" do
           expect(page).to have_content "未実行"
         end
       end
 
       it "displays '実行済' when the shown user's article was tweeted for announce" do
         visit article_path tweeted_article
-        within ".article-table" do
+        within ".article-info" do
           expect(page).to have_content "実行済"
         end
       end
@@ -514,14 +550,14 @@ describe "article management system", type: :system do
       end
 
       it "displays '未実行' when the shown user's article wasn't tweeted for announce" do
-        within ".article-table" do
+        within ".article-info" do
           expect(page).to have_content "未実行"
         end
       end
 
       it "displays '実行済' when the shown user's article was tweeted for announce" do
         visit article_path tweeted_article
-        within ".article-table" do
+        within ".article-info" do
           expect(page).to have_content "実行済"
         end
       end

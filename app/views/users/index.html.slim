@@ -9,7 +9,7 @@ h1 投稿者一覧
     = f.submit class: 'btn btn-outline-primary'
 
 - if !current_user
-  = link_to '新規登録', new_user_path, class: 'btn btn-primary mb-3'
+  = link_to '新規登録', new_user_path, class: 'btn btn-primary btn-block mb-3'
 
 .mb-3
   = paginate @users

@@ -5,7 +5,7 @@ h1= @user.blog_name
 
 h3 投稿者紹介
 
-table.table.user-profile
+table.table.table-sm.user-profile
   tbody
     tr
       th= User.human_attribute_name(:id)
@@ -43,6 +43,6 @@ h3= "#{@user.name}の記事一覧"
 = render 'shared/article_search_form', q: @q
 
 - if current_user == @user
-  = link_to '記事を書く', new_article_path, class: 'btn btn-primary mb-3'
+  = link_to '記事を書く', new_article_path, class: 'btn btn-primary btn-block mb-3'
 
 = render 'shared/article_table', { q: @q, articles: @articles }

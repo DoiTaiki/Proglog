@@ -2,15 +2,15 @@
   = paginate articles
   = page_entries_info articles
 
-table.table.table-hover.article-table
+table.table.table-hover.article-table.text-center
   thead.thead-default
-    tr
-      th= sort_link(q, :title)
-      th= User.human_attribute_name(:name)
-      th= Article.human_attribute_name(:description)
-      th= sort_link(q, :updated_at)
-      th style="width:75px"
-      th style="width:75px"
+    tr.d-flex
+      th.col-3= sort_link(q, :title)
+      th.col-1= User.human_attribute_name(:name)
+      th.col-4= Article.human_attribute_name(:description)
+      th.col-2= sort_link(q, :updated_at)
+      th.col-1
+      th.col-1
   tbody
     = render partial: 'shared/article', collection: articles
 

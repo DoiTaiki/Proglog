@@ -13,21 +13,21 @@ describe ApplicationHelper do
     context "arguement's data type is wrong" do
       let(:current_time) { "a" }
       it "raises NoMethodError" do
-        expect{ time_format current_time }.to raise_error(NoMethodError)
+        expect { time_format current_time }.to raise_error(NoMethodError)
       end
     end
 
     context "arguement's data is blank" do
       let(:current_time) { "" }
       it "raises NoMethodError" do
-        expect{ time_format current_time }.to raise_error NoMethodError
+        expect { time_format current_time }.to raise_error NoMethodError
       end
     end
 
     context "arguement's data is nil" do
       let(:current_time) { nil }
       it "raises NoMethodError" do
-        expect{ time_format current_time }.to raise_error NoMethodError
+        expect { time_format current_time }.to raise_error NoMethodError
       end
     end
 

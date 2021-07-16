@@ -6,7 +6,7 @@ describe ApplicationHelper do
 
     context "arguement's data type is Time" do
       it "displays time which is arranged format" do
-        expect(time_format current_time).to eq Time.now.strftime("%Y.%m.%d-%H:%M")
+        expect(time_format current_time).to eq Time.now.strftime("%Y年%m月%d日-%H:%M")
       end
     end
 

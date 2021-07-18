@@ -72,6 +72,7 @@ describe "common layout", type: :system do
 
     context "when user clicks the row in tweet table" do
       before do
+        wait_for_css_appear("#row-#{tweets.first.id}")
         find("#row-#{tweets.first.id}").click
       end
 
@@ -82,6 +83,7 @@ describe "common layout", type: :system do
 
     context "when user click '表示↔︎非表示' button once" do
       before do
+        wait_for_css_appear(".btn-sm")
         click_button "表示↔︎非表示"
       end
 

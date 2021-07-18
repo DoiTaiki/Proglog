@@ -69,6 +69,7 @@ describe "login system", type: :system do
     describe "session destroy function" do
       before do
         click_link "ログアウト"
+        wait_for_css_appear(".alert-success")
       end
 
       it "redirects to article index page" do

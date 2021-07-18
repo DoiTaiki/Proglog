@@ -67,7 +67,7 @@ describe "common layout", type: :system do
 
     it "displays tweet table on footer" do
       expect(page).to have_selector ".tweet-table", text: tweets.first.text
-      expect(page).to have_selector ".tweet-table", text: time_format(tweets.first.created_at.in_time_zone('Tokyo'))
+      expect(page).to have_selector ".tweet-table", text: tweets.first.created_at.in_time_zone('Tokyo').strftime("%Y年%m月%d日-%H:%M")
     end
 
     context "when user clicks the row in tweet table" do

@@ -43,13 +43,13 @@ describe "article management system", type: :system do
 
       it "displays a user's article update time" do
         within ".article-table" do
-          expect(page).to have_content time_format article.updated_at
+          expect(page).to have_content article.updated_at.strftime("%Y年%m月%d日-%H:%M")
         end
       end
 
       it "displays a other_user's article update time" do
         within ".article-table" do
-          expect(page).to have_content time_format other_article.updated_at
+          expect(page).to have_content other_article.updated_at.strftime("%Y年%m月%d日-%H:%M")
         end
       end
 
@@ -91,13 +91,13 @@ describe "article management system", type: :system do
 
       it "displays an article's create time" do
         within ".article-info" do
-          expect(page).to have_content time_format article.created_at
+          expect(page).to have_content article.created_at.strftime("%Y年%m月%d日-%H:%M")
         end
       end
 
       it "displays an article's update time" do
         within ".article-info" do
-          expect(page).to have_content time_format article.updated_at
+          expect(page).to have_content article.updated_at.strftime("%Y年%m月%d日-%H:%M")
         end
       end
 
@@ -318,7 +318,7 @@ describe "article management system", type: :system do
           within ".article-table" do
             expect(page).to have_content sample_article.title
             expect(page).to have_content sample_article.description
-            expect(page).to have_content time_format sample_article.updated_at
+            expect(page).to have_content sample_article.updated_at.strftime("%Y年%m月%d日-%H:%M")
           end
         end
 
@@ -427,7 +427,7 @@ describe "article management system", type: :system do
           within ".article-table" do
             expect(page).to have_content article.title
             expect(page).to have_content article.description
-            expect(page).to have_content time_format article.updated_at
+            expect(page).to have_content article.updated_at.strftime("%Y年%m月%d日-%H:%M")
           end
         end
 

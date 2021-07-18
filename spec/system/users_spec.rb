@@ -33,37 +33,37 @@ describe "user management system", type: :system do
 
       it "displays a user's profile create time" do
         within ".user-table" do
-          expect(page).to have_content time_format user.created_at
+          expect(page).to have_content user.created_at.strftime("%Y年%m月%d日-%H:%M")
         end
       end
 
       it "displays a other_user's profile create time" do
         within ".user-table" do
-          expect(page).to have_content time_format other_user.created_at
+          expect(page).to have_content other_user.created_at.strftime("%Y年%m月%d日-%H:%M")
         end
       end
 
       it "displays a admin_user's profile create time" do
         within ".user-table" do
-          expect(page).to have_content time_format admin_user.created_at
+          expect(page).to have_content admin_user.created_at.strftime("%Y年%m月%d日-%H:%M")
         end
       end
 
       it "displays a user's profile update time" do
         within ".user-table" do
-          expect(page).to have_content time_format user.updated_at
+          expect(page).to have_content user.updated_at.strftime("%Y年%m月%d日-%H:%M")
         end
       end
 
       it "displays a other_user's profile update time" do
         within ".user-table" do
-          expect(page).to have_content time_format other_user.updated_at
+          expect(page).to have_content other_user.updated_at.strftime("%Y年%m月%d日-%H:%M")
         end
       end
 
       it "displays a admin_user's profile update time" do
         within ".user-table" do
-          expect(page).to have_content time_format admin_user.updated_at
+          expect(page).to have_content admin_user.updated_at.strftime("%Y年%m月%d日-%H:%M")
         end
       end
 
@@ -144,13 +144,13 @@ describe "user management system", type: :system do
 
       it "displays a user's account create time in the profile" do
         within ".user-profile" do
-          expect(page).to have_content time_format user.created_at
+          expect(page).to have_content user.created_at.strftime("%Y年%m月%d日-%H:%M")
         end
       end
 
       it "displays a user's profile update time in the profile" do
         within ".user-profile" do
-          expect(page).to have_content time_format user.updated_at
+          expect(page).to have_content user.updated_at.strftime("%Y年%m月%d日-%H:%M")
         end
       end
 
@@ -193,7 +193,7 @@ describe "user management system", type: :system do
 
       it "displays an article's update time" do
         within ".article-table" do
-          expect(page).to have_content time_format article.updated_at
+          expect(page).to have_content article.updated_at.strftime("%Y年%m月%d日-%H:%M")
         end
       end
 

@@ -48,6 +48,8 @@ jobs:
           command: bundle exec rails db:schema:load --trace
       # Run rspec in parallel
       - ruby/rspec-test
+      - store_artifacts:
+          path: tmp/capybara
       - ruby/rubocop-check
       - run:
           name: Brakeman Checks

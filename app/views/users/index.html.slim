@@ -9,7 +9,8 @@ h1 投稿者一覧
     = f.submit class: 'btn btn-outline-primary'
 
 - if !current_user
-  = link_to '新規登録', new_user_path, class: 'btn btn-primary btn-block mb-3'
+  .d-grid
+    = link_to '新規登録', new_user_path, class: 'btn btn-primary mb-3'
 
 .mb-3
   = paginate @users
@@ -25,8 +26,7 @@ table.table.table-hover.text-center.user-table
         th.col-1= User.human_attribute_name(:updated_at)
         th.col-2= User.human_attribute_name(:email)
         th.col-1= User.human_attribute_name(:admin)
-        th.col-1
-        th.col-1
+        th.col-2
       - else
         th.col-2= sort_link(@q, :name)
         th.col-6= User.human_attribute_name(:profile)
@@ -36,3 +36,7 @@ table.table.table-hover.text-center.user-table
     = render partial: 'user', collection: @users
 
 = paginate @users
+
+- if !current_user
+  .d-grid
+    = link_to '新規登録', new_user_path, class: 'btn btn-primary mb-3'

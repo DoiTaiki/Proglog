@@ -20,7 +20,7 @@ RUN apk update && apk add --no-cache \
       postgresql-dev \
 && fc-cache -fv \
 # javascriptプラグインを使用するbootstrapのインストール
-&& yarn add bootstrap@4 jquery@3 popper.js@1 \
+&& yarn add bootstrap@5 jquery@3 @popperjs/core@2 \
 # tzdataにより可能。行わないとTZInfo::DataSourceNotFoundとなる。
 && cp /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
 WORKDIR /proglog

@@ -9,6 +9,8 @@ RUN apk update && apk add --no-cache \
 && apk update && apk add --no-cache --virtual=.build-deps \
       build-base \
       postgresql-dev \
+# javascriptプラグインを使用するbootstrapのインストール
+&& yarn add bootstrap@5 jquery@3 @popperjs/core@2 \
 && cp /usr/share/zoneinfo/Asia/Tokyo /etc/localtime
 WORKDIR /proglog
 COPY Gemfile /proglog/Gemfile

@@ -11,21 +11,21 @@ html
   body
     header
       .app-title.navbar.navbar-expand-md.navbar-dark.bg-secondary
-        .navbar-brand
+        .navbar-brand.ms-3
           | Proglog
-        ul.navbar-nav.ml-1
+        ul.navbar-nav.ms-1
           li.nav-item= link_to '記事一覧', articles_path, class: 'nav-link'
           li.nav-item= link_to '投稿者一覧', users_path, class: 'nav-link'
           - if current_user
             li.nav-item= link_to current_user.blog_name, user_path(current_user), class: 'nav-link'
           li.nav-item= link_to 'Twitter', "#{@tweets.first.user.uri}", class: 'nav-link'
-        ul.navbar-nav.ml-auto
+        ul.navbar-nav.ms-auto
           - if current_user
-            li.nav-item= link_to '記事を書く', new_article_path, class: 'nav-link'
-            li.nav-item= link_to 'ログアウト', logout_path, method: :delete, class: 'nav-link'
+            li.nav-item= link_to '記事を書く', new_article_path, class: 'btn btn-primary me-3'
+            li.nav-item= link_to 'ログアウト', logout_path, method: :delete, class: 'btn btn-danger me-3'
           - else
-            li.nav-item= link_to 'ログイン', login_path, class: 'nav-link'
-            li.nav-item= link_to '新規登録', new_user_path, class: 'nav-link'
+            li.nav-item= link_to 'ログイン', login_path, class: 'btn btn-primary me-3'
+            li.nav-item= link_to '新規登録', new_user_path, class: 'btn btn-primary me-3'
     .container-fluid
       - if flash.notice.present?
         .alert.alert-success= flash.notice
@@ -39,7 +39,7 @@ html
           | 最新のツイート(
           = link_to "@#{@tweets.first.user.screen_name}", "#{@tweets.first.user.uri}"
           | )
-          button class='btn btn-primary btn-sm' type='button' data-toggle='collapse' data-target='#collapseExample' aria-expanded='true' aria-controls='collapseExample'
+          button class='btn btn-primary btn-sm' type='button' data-bs-toggle='collapse' data-bs-target='#collapseExample' aria-expanded='true' aria-controls='collapseExample'
             | 表示↔︎非表示
         .show#collapseExample
           section.overflow-auto style='height: 200px'

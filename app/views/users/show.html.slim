@@ -34,7 +34,7 @@ table.table.table-sm.user-profile
       tr
         th アカウントの編集・削除
         td
-          = link_to '編集', edit_user_path, class: 'btn btn-primary mr-3'
+          = link_to '編集', edit_user_path, class: 'btn btn-primary me-3'
           - unless @user.admin?
             = link_to '削除', @user, method: :delete, data: { confirm: "ユーザー「#{@user.name}」を削除します。よろしいですか？"}, class: 'btn btn-danger'
 
@@ -43,6 +43,11 @@ h3= "#{@user.name}の記事一覧"
 = render 'shared/article_search_form', q: @q
 
 - if current_user == @user
-  = link_to '記事を書く', new_article_path, class: 'btn btn-primary btn-block mb-3'
+  .d-grid
+    = link_to '記事を書く', new_article_path, class: 'btn btn-primary mb-3'
 
 = render 'shared/article_table', { q: @q, articles: @articles }
+
+- if current_user == @user
+  .d-grid
+    = link_to '記事を書く', new_article_path, class: 'btn btn-primary mb-3'

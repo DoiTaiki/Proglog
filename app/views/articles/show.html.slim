@@ -5,11 +5,11 @@ h1= @article.title
 
 p.article-info
   | 著者:
-  = link_to @article.user.name, user_path(@article.user), class: 'mr-3'
-  span.mr-3
+  = link_to @article.user.name, user_path(@article.user), class: 'me-3'
+  span.me-3
     | 作成日:
     = time_format @article.created_at
-  span.mr-3
+  span.me-3
     | 更新日:
     = time_format @article.updated_at
   - if current_user&.admin? || current_user == @article.user
@@ -28,5 +28,5 @@ h5
 = auto_link(simple_format(h(@article.text), {}, sanitize: false))
 
 - if current_user&.admin? || current_user == @article.user
-  = link_to '編集', edit_article_path, class: 'btn btn-primary mr-3'
+  = link_to '編集', edit_article_path, class: 'btn btn-primary me-3'
   = link_to '削除', @article, method: :delete, data: { confirm: "ユーザー「#{@article.title}」を削除します。よろしいですか？"}, class: 'btn btn-danger'

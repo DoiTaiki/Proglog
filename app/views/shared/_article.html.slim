@@ -7,9 +7,7 @@ tr class="#{article.user.name}-article d-flex" style='word-wrap:break-word;'
       = link_to article.user.name, user_path(article.user)
   td.col-4= article.description
   td.col-2= time_format article.updated_at
-  td.col-1
+  td.col-2
     - if current_user&.admin? || current_user == article.user
-      = link_to '編集', edit_article_path(article), class: 'btn btn-primary'
-  td.col-1
-    - if current_user&.admin? || current_user == article.user
+      = link_to '編集', edit_article_path(article), class: 'btn btn-primary me-3'
       = link_to '削除', article, method: :delete, data: { confirm: "ユーザー「#{article.title}」を削除します。よろしいですか？" }, class: 'btn btn-danger'

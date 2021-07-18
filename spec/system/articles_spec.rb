@@ -471,7 +471,7 @@ describe "article management system", type: :system do
 
       context "push '削除' button and accept confirm" do
         before do
-          wait_for_css_appear(".btn-danger", 10)
+          wait_for_css_appear(".btn-danger")
           accept_confirm do
             click_link "削除"
           end
@@ -492,7 +492,7 @@ describe "article management system", type: :system do
 
       context "push '削除' button and dismiss confirm" do
         before do
-          wait_for_css_appear(".btn-danger", 10)
+          wait_for_css_appear(".btn-danger")
           dismiss_confirm do
             click_link "削除"
           end

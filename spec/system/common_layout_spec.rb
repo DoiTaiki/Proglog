@@ -70,25 +70,25 @@ describe "common layout", type: :system do
       expect(page).to have_selector ".tweet-table", text: tweets.first.created_at.in_time_zone('Tokyo').strftime("%Y年%m月%d日-%H:%M")
     end
 
-    # context "when user clicks the row in tweet table" do
-    #   before do
-    #     find("#row-#{tweets.first.id}").click
-    #   end
-    #
-    #   it "jumps to the tweet link" do
-    #     expect(page).to have_current_path tweets.first.uri, ignore_query: true
-    #   end
-    # end
+    context "when user clicks the row in tweet table" do
+      before do
+        find("#row-#{tweets.first.id}").click
+      end
 
-    # context "when user click '表示↔︎非表示' button once" do
-    #   before do
-    #     click_button "表示↔︎非表示"
-    #   end
-    #
-    #   it "doesn't display tweet table" do
-    #     expect(page).to have_no_selector ".tweet-table"
-    #   end
-    # end
+      it "jumps to the tweet link" do
+        expect(page).to have_current_path tweets.first.uri, ignore_query: true
+      end
+    end
+
+    context "when user click '表示↔︎非表示' button once" do
+      before do
+        click_button "表示↔︎非表示"
+      end
+
+      it "doesn't display tweet table" do
+        expect(page).to have_no_selector ".tweet-table"
+      end
+    end
 
     context "when user click '表示↔︎非表示' button twice" do
       before do

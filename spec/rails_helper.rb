@@ -62,4 +62,12 @@ RSpec.configure do |config|
   # config.filter_gems_from_backtrace("gem name")
   config.include FactoryBot::Syntax::Methods
   config.include TestHelpers
+  # 実行中にリトライのステータスを表示する
+  config.verbose_retry = true
+  # リトライの原因となった例外を表示する
+  config.display_try_failure_messages = true
+
+  config.around :each do |ex|
+    ex.run_with_retry retry: 3
+  end
 end

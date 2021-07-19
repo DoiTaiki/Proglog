@@ -72,22 +72,22 @@ describe "common layout", type: :system do
 
     context "when user clicks the row in tweet table" do
       before do
-        wait_for_css_appear("#row-#{tweets.first.id}")
         find("#row-#{tweets.first.id}").click
       end
 
       it "jumps to the tweet link" do
+        wait_for_css_disappear("#row-#{tweets.first.id}")
         expect(page).to have_current_path tweets.first.uri, ignore_query: true
       end
     end
 
     context "when user click '表示↔︎非表示' button once" do
       before do
-        wait_for_css_appear(".btn-sm")
         click_button "表示↔︎非表示"
       end
 
       it "doesn't display tweet table" do
+        wait_for_css_disappear(".tweet-table")
         expect(page).to have_no_selector ".tweet-table"
       end
     end

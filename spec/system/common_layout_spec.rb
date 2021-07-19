@@ -76,7 +76,7 @@ describe "common layout", type: :system do
       end
 
       it "jumps to the tweet link" do
-        wait_for_css_disappear("#row-#{tweets.first.id}")
+        wait_for_css_disappear("#row-#{tweets.first.id}", 10)
         expect(page).to have_current_path tweets.first.uri, ignore_query: true
       end
     end
@@ -87,7 +87,7 @@ describe "common layout", type: :system do
       end
 
       it "doesn't display tweet table" do
-        wait_for_css_disappear(".tweet-table")
+        wait_for_css_disappear(".tweet-table", 10)
         expect(page).to have_no_selector ".tweet-table"
       end
     end

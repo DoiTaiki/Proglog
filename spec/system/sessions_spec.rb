@@ -66,7 +66,7 @@ describe "login system", type: :system do
       end
     end
 
-    describe "session destroy function" do
+    describe "session destroy function", js: true do
       before do
         click_link "ログアウト"
       end

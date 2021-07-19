@@ -502,7 +502,7 @@ describe "user management system", type: :system do
         visit user_path user
       end
 
-      context "push '削除' button and accept confirm" do
+      context "push '削除' button and accept confirm", js: true do
         before do
           accept_confirm do
             within ".user-profile" do
@@ -511,7 +511,7 @@ describe "user management system", type: :system do
           end
         end
 
-        it "redirects to user index page" do
+        it "redirects to user index page", js: true do
           expect(page).to have_current_path users_path, ignore_query: true
         end
 
@@ -533,7 +533,7 @@ describe "user management system", type: :system do
           end
         end
 
-        it "displays the user's name in the user table" do
+        it "displays the user's name in the user table", js: true do
           visit users_path
           expect(page).to have_selector ".user-table", text: user.name
         end

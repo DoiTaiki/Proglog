@@ -42,17 +42,6 @@ jobs:
       PGUSER: circleci-demo-ruby
       PGPASSWORD: ""
       RAILS_ENV: test
-    parameters:
-      label:
-        default: RSpec Tests
-        description: Task label
-        type: string
-      out-path:
-        default: /tmp/test-results/rspec
-        description: >-
-          Where to save the rspec.xml file. Will automatically be saved to
-          test_results and artifacts on CircleCI.
-        type: string
     steps:
       - install_ruby_and_node
       - browser-tools/install-chrome
@@ -61,21 +50,7 @@ jobs:
           name: Database setup
           command: bundle exec rails db:schema:load --trace
       # Run rspec in parallel
-      - run:
-          command: >
-            mkdir -p <<parameters.out-path>>
-
-            TESTFILES=$(circleci tests glob "spec/**/*_spec.rb" | circleci tests
-            split --split-by=timings)
-
-            bundle exec rspec $TESTFILES --profile 10 --format RspecJunitFormatter
-            --out <<parameters.out-path>>/results.xml --format progress
-          name: <<parameters.label>>
-      - store_test_results:
-          path: <<parameters.out-path>>
-      - store_artifacts:
-          destination: test-results
-          path: <<parameters.out-path>>
+      - ruby/rspec-test
       - store_artifacts:
           destination: test-screenshots
           path: tmp/screenshots

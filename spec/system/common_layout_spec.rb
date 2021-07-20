@@ -70,7 +70,7 @@ describe "common layout", type: :system do
       expect(page).to have_selector ".tweet-table", text: tweets.first.created_at.in_time_zone('Tokyo').strftime("%Y年%m月%d日-%H:%M")
     end
 
-    context "when user clicks the row in tweet table", js: true do
+    context "when user clicks the row in tweet table" do
       before do
         find("#row-#{tweets.first.id}").click
       end
@@ -85,7 +85,7 @@ describe "common layout", type: :system do
         click_button "表示↔︎非表示"
       end
 
-      it "doesn't display tweet table", js: true do
+      it "doesn't display tweet table" do
         expect(page).to have_no_selector ".tweet-table"
       end
     end

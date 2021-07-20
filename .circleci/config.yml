@@ -9,7 +9,7 @@ commands:
       - node/install-packages:
           pkg-manager: yarn
       - run:
-          name: install-bootstrap
+          name: Install bootstrap
           command: yarn add bootstrap@5 jquery@3 @popperjs/core@2
 
 orbs:
@@ -55,8 +55,7 @@ jobs:
         type: string
     steps:
       - install_ruby_and_node
-      - browser-tools/install-chrome:
-          chrome-version: "86.0.4240.111"
+      - browser-tools/install-chrome
       - browser-tools/install-chromedriver
       - run:
           name: Database setup

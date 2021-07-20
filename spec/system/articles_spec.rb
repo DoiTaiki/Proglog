@@ -469,7 +469,7 @@ describe "article management system", type: :system do
         visit article_path user.articles.first
       end
 
-      context "push '削除' button and accept confirm", js: true do
+      context "push '削除' button and accept confirm" do
         before do
           accept_confirm do
             click_link "削除"
@@ -496,7 +496,7 @@ describe "article management system", type: :system do
           end
         end
 
-        it "displays the article's title in the author's article table", js: true do
+        it "displays the article's title in the author's article table" do
           visit user_path article.user
           expect(page).to have_selector ".article-table", text: article.title
         end

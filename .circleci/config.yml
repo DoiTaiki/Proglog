@@ -8,6 +8,7 @@ commands:
       # Store bundle cache
       - node/install-packages:
           pkg-manager: yarn
+          cache-key: "yarn.lock"
 
 orbs:
   ruby: circleci/ruby@1

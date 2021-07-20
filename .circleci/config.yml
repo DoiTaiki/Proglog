@@ -8,7 +8,9 @@ commands:
       # Store bundle cache
       - node/install-packages:
           pkg-manager: yarn
-          cache-key: "yarn.lock"
+      - run:
+          name: install-bootstrap
+          command: yarn add bootstrap@5 jquery@3 @popperjs/core@2
 
 orbs:
   ruby: circleci/ruby@1

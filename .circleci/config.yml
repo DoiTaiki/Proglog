@@ -39,7 +39,17 @@ jobs:
       PGUSER: circleci-demo-ruby
       PGPASSWORD: ""
       RAILS_ENV: test
-      RAILS_SYSTEM_TESTING_SCREENSHOT_HTML: 1
+    parameters:
+      label:
+        default: RSpec Tests
+        description: Task label
+        type: string
+      out-path:
+        default: /tmp/test-results/rspec
+        description: >-
+          Where to save the rspec.xml file. Will automatically be saved to
+          test_results and artifacts on CircleCI.
+        type: string
     steps:
       - install_ruby_and_node
       - browser-tools/install-chrome:
@@ -50,15 +60,22 @@ jobs:
           command: bundle exec rails db:schema:load --trace
       # Run rspec in parallel
       - run:
-          name: Rspec Checks
-          command: bundle exec rspec　--format RspecJunitFormatter \
-                                      --out test_results/rspec.xml \
-                                      --format progress
-                                      $(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)
+          command: >
+            mkdir -p <<parameters.out-path>>
 
+            TESTFILES=$(circleci tests glob "spec/**/*_spec.rb" | circleci tests
+            split --split-by=timings)
+
+            bundle exec rspec $TESTFILES --profile 10 --format RspecJunitFormatter
+            --out <<parameters.out-path>>/results.xml --format progress
+          name: <<parameters.label>>
       - store_test_results:
-          path: test_results
+          path: <<parameters.out-path>>
       - store_artifacts:
+          destination: test-results
+          path: <<parameters.out-path>>
+      - store_artifacts:
+          destination: test-screenshots
           path: tmp/screenshots
       - ruby/rubocop-check
       - run:

@@ -39,6 +39,7 @@ jobs:
       PGUSER: circleci-demo-ruby
       PGPASSWORD: ""
       RAILS_ENV: test
+      RAILS_SYSTEM_TESTING_SCREENSHOT_HTML: 1
     steps:
       - install_ruby_and_node
       - browser-tools/install-chrome:
@@ -48,7 +49,21 @@ jobs:
           name: Database setup
           command: bundle exec rails db:schema:load --trace
       # Run rspec in parallel
-      - ruby/rspec-test
+      - run:
+          name: Rspec Checks
+          command: bundle exec rspec　--format json \
+                              --out result.json \
+                              --format RspecJunitFormatter \
+                              --out test_results/rspec.xml \
+                              --format progress
+                              $(circleci tests glob "spec/**/*_spec.rb" | circleci tests split --split-by=timings)
+
+      - store_test_results:
+          path: test_results
+      - store_artifacts:
+          path: result.json
+      - store_artifacts:
+          path: tmp/screenshots
       - ruby/rubocop-check
       - run:
           name: Brakeman Checks

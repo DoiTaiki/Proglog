@@ -47,9 +47,8 @@ jobs:
           name: Database setup
           command: bundle exec rails db:schema:load --trace
       # Run rspec in parallel
-      - ruby/rspec-test
-      - store_artifacts:
-          path: tmp/capybara
+      - ruby/rspec-test:
+          out-path: /tmp/screenshots
       - ruby/rubocop-check
       - run:
           name: Brakeman Checks

@@ -493,7 +493,6 @@ describe "article management system", type: :system do
         before do
           dismiss_confirm do
             click_link "削除"
-
           end
         end
 

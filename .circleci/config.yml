@@ -41,14 +41,14 @@ jobs:
       RAILS_ENV: test
     steps:
       - install_ruby_and_node
-      - browser-tools/install-chrome
+      - browser-tools/install-chrome:
+          chrome-version: "86.0.4240.111"
       - browser-tools/install-chromedriver
       - run:
           name: Database setup
           command: bundle exec rails db:schema:load --trace
       # Run rspec in parallel
-      - ruby/rspec-test:
-          out-path: /tmp/screenshots
+      - ruby/rspec-test
       - ruby/rubocop-check
       - run:
           name: Brakeman Checks

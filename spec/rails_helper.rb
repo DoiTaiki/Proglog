@@ -62,6 +62,8 @@ RSpec.configure do |config|
   # config.filter_gems_from_backtrace("gem name")
   config.include FactoryBot::Syntax::Methods
   config.include TestHelpers
+  config.include TwitterApiSetting
+  config.include OmniAuthTwitterMocks
   # 実行中にリトライのステータスを表示する
   config.verbose_retry = true
   # リトライの原因となった例外を表示する

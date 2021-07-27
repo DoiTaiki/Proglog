@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_07_06_094247) do
+ActiveRecord::Schema.define(version: 2021_07_24_074814) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -35,6 +35,7 @@ ActiveRecord::Schema.define(version: 2021_07_06_094247) do
     t.boolean "admin", default: false, null: false
     t.string "profile", limit: 255
     t.string "blog_name", limit: 30, null: false
+    t.string "uid"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["name"], name: "index_users_on_name", unique: true
   end

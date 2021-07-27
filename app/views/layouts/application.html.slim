@@ -25,6 +25,7 @@ html
             li.nav-item= link_to 'ログアウト', logout_path, method: :delete, class: 'btn btn-danger me-3'
           - else
             li.nav-item= link_to 'ログイン', login_path, class: 'btn btn-primary me-3'
+            li.nav-item= link_to 'Twitterアカウントによるログイン', '/auth/twitter', method: :post, class: 'btn btn-primary me-3'
             li.nav-item= link_to '新規登録', new_user_path, class: 'btn btn-primary me-3'
     .container-fluid
       - if flash.notice.present?

@@ -1,0 +1,13 @@
+= form_with scope: :session, class: 'login-form' do |f|
+  .form-group
+    = f.label :email, 'メールアドレス'
+    = f.text_field :email, class: 'form-control', id: 'session_email'
+  .form-group
+    = f.label :password, 'パスワード'
+    = f.password_field :password, class: 'form-control', id: 'session_password'
+  - if controller_name == 'twitter_sessions'
+    .form-group
+      = f.label :password_confirmation, 'パスワード(確認)'
+      = f.password_field :password_confirmation, class: 'form-control', id: 'session_password_confirmation'
+    = f.hidden_field :uid, value: session[:uid]
+  = f.submit button_name, class: 'btn btn-primary'

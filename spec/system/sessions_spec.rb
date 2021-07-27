@@ -25,6 +25,24 @@ describe "login system", type: :system do
         expect(page).to have_button "ログインする"
       end
     end
+
+    context "when user log-ins" do
+      before do
+        visit login_path
+        fill_in 'メールアドレス', with: login_user.email
+        fill_in 'パスワード', with: login_user.password
+        click_button 'ログインする'
+        visit login_path
+      end
+
+      it "redirects to root page" do
+        expect(page).to have_current_path root_path, ignore_query: true
+      end
+
+      it "displays flash message about failure in link to page" do
+        expect(page).to have_selector ".alert-danger", text: "ログイン中は無効な操作です。"
+      end
+    end
   end
 
   describe "login and logout function" do

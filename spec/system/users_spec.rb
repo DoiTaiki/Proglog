@@ -325,6 +325,20 @@ describe "user management system", type: :system do
       click_button 'ログインする'
     end
 
+    describe "user new function" do
+      before do
+        visit new_user_path
+      end
+
+      it "redirects to root page" do
+        expect(page).to have_current_path root_path, ignore_query: true
+      end
+
+      it "displays flash message about failure in link to page" do
+        expect(page).to have_selector ".alert-danger", text: "ログイン中は無効な操作です。"
+      end
+    end
+
     describe "user index function" do
       before do
         visit users_path

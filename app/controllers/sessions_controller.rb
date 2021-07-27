@@ -1,4 +1,6 @@
 class SessionsController < ApplicationController
+  before_action :no_login_required, only: [:new, :create]
+
   def new
   end
 
@@ -19,8 +21,12 @@ class SessionsController < ApplicationController
   end
 
   def destroy
-    reset_session
-    redirect_to root_path, notice: "ログアウトしました。"
+    if current_user
+      reset_session
+      redirect_to root_path, notice: "ログアウトしました。"
+    else
+      redirect_to root_path, alert: "ログインしていません。"
+    end
   end
 
   private

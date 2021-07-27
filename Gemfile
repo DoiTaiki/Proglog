@@ -30,6 +30,8 @@ gem 'bootsnap', '>= 1.4.4', require: false
 gem 'html2slim'
 gem 'kaminari', git: 'https://github.com/kaminari/kaminari'
 gem 'listen', '~> 3.3'
+gem 'omniauth-twitter'
+gem "omniauth-rails_csrf_protection"
 gem 'slim-rails'
 gem 'spring'
 gem 'rails_autolink'

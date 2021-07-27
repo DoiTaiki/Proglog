@@ -60,10 +60,6 @@ class UsersController < ApplicationController
     redirect_to root_path, notice: "該当アカウントの編集・削除権限を持っていません。" unless User.find(params[:id]) == current_user || current_user&.admin?
   end
 
-  def no_login_required
-    redirect_to root_path, alert: "ログイン中のユーザー新規登録は行えません。" if current_user
-  end
-
   def set_user
     @user = User.find(params[:id])
   end

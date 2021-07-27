@@ -17,9 +17,6 @@
 require 'capybara/rspec'
 
 # Capybara.server = :puma, {Silent: true}
-Capybara.configure do |capybara_config|
-  capybara_config.default_max_wait_time = 10 # 一つのテストに10秒以上かかったらタイムアウトするように設定しています
-end
 #
 Capybara.register_driver :selenium_chrome_headless do |app|
   options = ::Selenium::WebDriver::Chrome::Options.new
@@ -31,6 +28,8 @@ Capybara.register_driver :selenium_chrome_headless do |app|
 
   Capybara::Selenium::Driver.new(app, browser: :chrome, options: options)
 end
+
+OmniAuth.config.test_mode = true
 
 # Capybara.javascript_driver = :selenium_chrome_headless
 

@@ -12,6 +12,10 @@ class ApplicationController < ActionController::Base
     redirect_to login_path, notice: "ログインして下さい。" unless current_user
   end
 
+  def no_login_required
+    redirect_to root_path, alert: "ログイン中は無効な操作です。" if current_user
+  end
+
   def twitter_client_definition
     Twitter::REST::Client.new do |config|
       config.consumer_key        = ENV["YOUR_CONSUMER_KEY"]    # API Key

@@ -33,6 +33,12 @@ describe "common layout", type: :system do
       end
     end
 
+    it "displays a 'Twitterアカウントによるログイン' link on navigation bar" do
+      within ".navbar" do
+        expect(page).to have_link "Twitterアカウントによるログイン", href: "/auth/twitter"
+      end
+    end
+
     it "displays a '新規登録' link on navigation bar" do
       within ".navbar" do
         expect(page).to have_link "新規登録", href: new_user_path
@@ -114,6 +120,12 @@ describe "common layout", type: :system do
     it "doesn't display a 'ログイン' link on navigation bar" do
       within ".navbar" do
         expect(page).to have_no_link "ログイン"
+      end
+    end
+
+    it "doesn't display a 'Twitterアカウントによるログイン' link on navigation bar" do
+      within ".navbar" do
+        expect(page).to have_no_link "Twitterアカウントによるログイン"
       end
     end
 

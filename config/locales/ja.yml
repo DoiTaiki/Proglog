@@ -10,6 +10,7 @@ ja:
     models:
       article: 記事
       user: ユーザー
+      category: カテゴリー
     attributes:
       article:
         id: ID
@@ -20,6 +21,7 @@ ja:
         created_at: 投稿日時
         updated_at: 更新日時
       user:
+        id: ID
         name: 投稿者名
         email: メールアドレス
         blog_name: ブログ名
@@ -28,6 +30,11 @@ ja:
         password: パスワード
         password_confirmation: パスワード(確認)
         created_at: 登録日時
+        updated_at: 更新日時
+      category:
+        id: ID
+        category_tag: カテゴリー名
+        created_at: 投稿日時
         updated_at: 更新日時
   date:
     abbr_day_names:

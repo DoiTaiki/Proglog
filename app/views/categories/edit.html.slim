@@ -1,0 +1,12 @@
+h1 カテゴリーの編集
+
+- if @category.errors.present?
+  ul#error_explanation
+    - @category.errors.full_messages.each do |message|
+      li= message
+
+= form_with model: @category, class: 'category-form' do |f|
+  .mb-3
+    = f.label :category_tag
+    = f.text_field :category_tag, class: 'form-control'
+  = f.submit nil, class: 'btn btn-primary'

@@ -29,3 +29,16 @@ end
     end
   end
 end
+
+admin_user_categories = 3.times do |n|
+  admin_user.categories.find_or_create_by!(category_tag: "カテゴリー_#{n}")
+end
+
+categorised_article = admin_user.categories.each do |category|
+  2.times do |n|
+    category.articles.find_or_create_by!(title: "#{category.category_tag}にカテゴライズされた記事_#{n}") do |article|
+      article.text = "category test"
+      article.user_id = category.user.id
+    end
+  end
+end

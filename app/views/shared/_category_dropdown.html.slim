@@ -1,0 +1,13 @@
+li.nav-item.dropdown
+  button class='btn btn-dark me-3 dropdown-toggle nav-link' type='button' id='dropdownMenuButton' data-bs-toggle='dropdown' aria-expanded='false'
+    | #{user.blog_name}のカテゴリー
+  ul class='dropdown-menu bg-light' aria-labelledby='dropdownMenuButton'
+    - if form
+      li class='dropdown-item'
+        = form_with model: user.categories.new, class: 'row g-1 align-items-center category-form' do |f|
+          .col-auto
+            = f.label :category_tag, class: 'd-none'
+            = f.text_field :category_tag, placeholder: 'カテゴリー名', class: 'form-control form-control-sm'
+          .col-auto
+            = f.submit '追加', class: 'btn btn-primary btn-sm'
+    = render partial: 'shared/category', collection: user.categories

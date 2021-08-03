@@ -7,6 +7,9 @@ p.article-info
   | 著者:
   = link_to @article.user.name, user_path(@article.user), class: 'me-3'
   span.me-3
+    | カテゴリー:
+    = render partial: 'article_category', collection: @article.categories
+  span.me-3
     | 作成日:
     = time_format @article.created_at
   span.me-3

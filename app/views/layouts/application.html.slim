@@ -16,9 +16,12 @@ html
         ul.navbar-nav.ms-1
           li.nav-item= link_to '記事一覧', articles_path, class: 'nav-link'
           li.nav-item= link_to '投稿者一覧', users_path, class: 'nav-link'
+          li.nav-item= link_to 'Twitter', "#{@tweets.first.user.uri}", class: 'nav-link'
           - if current_user
             li.nav-item= link_to current_user.blog_name, user_path(current_user), class: 'nav-link'
-          li.nav-item= link_to 'Twitter', "#{@tweets.first.user.uri}", class: 'nav-link'
+            = render 'shared/category_dropdown', { user: current_user, form: true }
+          - if @article && @article.user != current_user
+            = render 'shared/category_dropdown', { user: @article.user, form: false }
         ul.navbar-nav.ms-auto
           - if current_user
             li.nav-item= link_to '記事を書く', new_article_path, class: 'btn btn-primary me-3'
@@ -38,7 +41,7 @@ html
       .text-white.bg-secondary.fixed-bottom
         p.mt-3
           | 最新のツイート(
-          = link_to "@#{@tweets.first.user.screen_name}", "#{@tweets.first.user.uri}"
+          = link_to "@#{@tweets.first.user.screen_name}", "#{@tweets.first.user.uri}", class: "nav-link d-inline text-light"
           | )
           button class='btn btn-primary btn-sm' type='button' data-bs-toggle='collapse' data-bs-target='#collapseExample' aria-expanded='true' aria-controls='collapseExample'
             | 表示↔︎非表示

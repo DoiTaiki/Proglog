@@ -6,6 +6,6 @@ Rails.application.routes.draw do
   get '/new_link_account', to: 'twitter_sessions#new_link_account'
   post '/new_link_account', to: 'twitter_sessions#create_link_account'
   root to: 'articles#index'
-  resources :articles
-  resources :users
+  resources :articles, :users
+  resources :categories, only: [:show, :create, :edit, :update, :destroy]
 end

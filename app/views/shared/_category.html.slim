@@ -1,0 +1,6 @@
+- if category.id
+  li class="dropdown-item category-#{category.id}"
+    = link_to category.category_tag, category_path(category), class: 'me-3 nav-link text-secondary d-inline'
+    - if category.user == current_user
+      = link_to '編集', edit_category_path(category), class: 'btn btn-primary btn-sm me-1'
+      = link_to '削除', category, method: :delete, data: { confirm: "カテゴリー「#{category.category_tag}」を削除します。よろしいですか？" }, class: "btn btn-danger btn-sm"

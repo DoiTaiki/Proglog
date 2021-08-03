@@ -4,16 +4,19 @@
       li= message
 
 = form_with model: article, class: 'form' do |f|
-  .form-group.mb-1
+  .mb-1
     = f.label :title
     = f.text_field :title, class: 'form-control', id: 'article_title'
-  .form-group.mb-1
+  .mb-1
     = f.label :description
     = f.text_field :description, class: 'form-control', id: 'article_description'
-  .form-group.mb-1
+  .mb-1
     = f.label :text
     = f.text_area :text, rows: 30, class: 'form-control', id: 'article_text'
-  .form-group.mb-3
+  .mb-1
+    = f.label 'カテゴリー名'
+    = f.collection_check_boxes :category_ids, categories, :id, :category_tag
+  .mb-3
     = f.label :twitter_announce, class: 'form-check-label' do
       = f.check_box :twitter_announce, class: 'form-check-input'
       | Twitterの専用アカウントによる告知機能を利用しますか？

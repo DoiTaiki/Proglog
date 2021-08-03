@@ -9,6 +9,7 @@ class User < ApplicationRecord
   validates :password_confirmation, presence: true
 
   has_many :articles, dependent: :destroy
+  has_many :categories, dependent: :destroy
 
   def self.ransackable_attributes(auth_object = nil)
     %w[name]

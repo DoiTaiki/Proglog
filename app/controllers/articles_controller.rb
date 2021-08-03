@@ -1,6 +1,8 @@
 class ArticlesController < ApplicationController
   before_action :login_required, only: [:new, :create, :edit, :update, :destroy]
   before_action :set_article, only: [:edit, :update]
+  before_action :set_categories, only: [:new, :edit]
+  before_action :correct_user?, only: [:destroy]
 
   def index
     @q = Article.all.ransack(params[:q])
@@ -51,11 +53,19 @@ class ArticlesController < ApplicationController
   private
 
   def article_params
-    params.require(:article).permit(:title, :description, :text, :twitter_announce)
+    params.require(:article).permit(:title, :description, :text, :twitter_announce, category_ids: [])
   end
 
   def set_article
     @article = current_user.articles.find(params[:id])
+  end
+
+  def set_categories
+    @categories = current_user.categories
+  end
+
+  def correct_user?
+    redirect_to root_path, notice: "該当アカウントの編集・削除権限を持っていません。" unless current_user&.admin? || Article.find(params[:id]).user == current_user
   end
 
   def flash_and_tweet_process(new_or_edit)

@@ -34,7 +34,6 @@ class UsersController < ApplicationController
 
   def update
     if @user.update(user_params)
-      flash[:notice] = "ユーザー「#{@user.name}」を更新しました。"
       redirect_to user_path(@user), notice: "ユーザー「#{@user.name}」を更新しました。"
     else
       render :edit
@@ -57,7 +56,7 @@ class UsersController < ApplicationController
   end
 
   def correct_user?
-    redirect_to root_path, notice: "該当アカウントの編集・削除権限を持っていません。" unless User.find(params[:id]) == current_user || current_user&.admin?
+    redirect_to root_path, notice: "該当アカウントの編集・削除権限を持っていません。" unless current_user&.admin? || User.find(params[:id]) == current_user
   end
 
   def set_user

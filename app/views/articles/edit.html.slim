@@ -3,4 +3,4 @@ h1 記事の編集
 .nav.justify-content-end
   = link_to '記事一覧', articles_path, class: 'nav-link'
 
-= render 'article_form', { article: @article, submit_button_name: nil }
+= render 'article_form', { article: @article, categories: @categories,  submit_button_name: nil }

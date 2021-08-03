@@ -4,6 +4,8 @@ class Article < ApplicationRecord
   validates :text, presence: true
 
   belongs_to :user
+  has_many :category_articles, dependent: :destroy
+  has_many :categories, through: :category_articles
 
   paginates_per 10
 

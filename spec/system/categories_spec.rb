@@ -2,11 +2,12 @@ require 'rails_helper'
 
 describe "category management system", type: :system do
   let(:login_user) { create(:user) }
-  let(:other_user) { create(:user) }
+  let(:other_user) { create(:user, name: "other user") }
   let!(:category) { create(:category, user: login_user) }
   let(:other_user_category) { create(:category, user: other_user) }
   let!(:categorised_article) { create(:article, user: login_user, categories: [category]) }
-  let(:other_user_categorised_article) { create(:article, user: other_user, category: other_user_category) }
+  let!(:other_user_categorised_article) { create(:article, title: "other_user_categorised_article", user: other_user, categories: [other_user_category]) }
+  let!(:no_categorised_article) { create(:article, title: "no_categorised_article", user: login_user) }
 
   describe "basic function" do
     describe "category show function" do
@@ -36,6 +37,18 @@ describe "category management system", type: :system do
         within ".article-table" do
           expect(page).to have_content categorised_article.updated_at.strftime("%Y年%m月%d日-%H:%M")
         end
+      end
+
+      it "doesn't display a link of other user's category article title" do
+        expect(page).to have_no_link other_user_categorised_article.title
+      end
+
+      it "doesn't display a link of other user's name" do
+        expect(page).to have_no_link other_user_categorised_article.user.name
+      end
+
+      it "doesn't display a link of no categorised article title" do
+        expect(page).to have_no_link no_categorised_article.title
       end
 
       it "doesn't display a '記事を書く' button" do

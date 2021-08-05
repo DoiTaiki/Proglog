@@ -10,6 +10,9 @@ describe "article management system", type: :system do
   let(:no_description_article) { create(:article, description: nil, user: user) }
   let!(:other_article) { create(:article, title: "other_article's title",  user: other_user) }
   let(:tweeted_article) { create(:article, title: "tweet announce", text: "tweet announce", twitter_announce: true, user: user) }
+  let!(:category) { create(:category, user: user, articles: [article]) }
+  let!(:other_category) { create(:category, category_tag: "other category", user: user) }
+  let!(:other_user_category) { create(:category, category_tag: "other user category", user: other_user) }
 
   describe "basic function" do
     describe "article index function" do
@@ -89,6 +92,14 @@ describe "article management system", type: :system do
         end
       end
 
+      it "displays a link of article's category" do
+        within ".article-info" do
+          article.categories.each do |category|
+            expect(page).to have_link category.category_tag, href: category_path(category)
+          end
+        end
+      end
+
       it "displays an article's create time" do
         within ".article-info" do
           expect(page).to have_content article.created_at.strftime("%Y年%m月%d日-%H:%M")
@@ -103,6 +114,10 @@ describe "article management system", type: :system do
 
       it "displays an article's text" do
         expect(page).to have_content article.text
+      end
+
+      it "doesn't display a link of a category which isn't associated with the article" do
+        expect(page).to have_no_link other_category.category_tag
       end
 
       it "doesn't display if twitter_announce executed" do
@@ -278,6 +293,13 @@ describe "article management system", type: :system do
         end
       end
 
+      it "displays check boxes about article category" do
+        within ".form" do
+          expect(page).to have_unchecked_field category.category_tag
+          expect(page).to have_unchecked_field other_category.category_tag
+        end
+      end
+
       it "displays a check box about tweet for announce" do
         within ".form" do
           expect(page).to have_unchecked_field("Twitterの専用アカウントによる告知機能を利用しますか？")
@@ -289,51 +311,92 @@ describe "article management system", type: :system do
           expect(page).to have_button "投稿する"
         end
       end
+
+      it "doesn't display a check box about other user's category" do
+        expect(page).to have_no_unchecked_field other_user_category.category_tag
+      end
     end
 
     describe "article create function" do
-      let(:article_title) { "sample article" }
-      let(:article_description) { "sample article description" }
-      let(:article_text) { "It is a sample article" }
-      let(:sample_article) { Article.find_by(title: article_title) }
-
-      before do
-        visit new_article_path
-        fill_in "題名", with: article_title
-        fill_in "概要", with: article_description
-        fill_in "本文", with: article_text
-        click_button "投稿する"
-      end
+      let(:article_title) { "new article" }
+      let(:article_description) { "new article description" }
+      let(:article_text) { "It is a new article" }
+      let(:new_article) { Article.find_by(title: article_title) }
 
       context "when all text box is filled in correctly" do
+        before do
+          visit new_article_path
+          fill_in "題名", with: article_title
+          fill_in "概要", with: article_description
+          fill_in "本文", with: article_text
+          click_button "投稿する"
+        end
+
         it "redirects to the author's blog page" do
-          expect(page).to have_current_path user_path(sample_article.user), ignore_query: true
+          expect(page).to have_current_path user_path(new_article.user), ignore_query: true
         end
 
         it "displays flash message about success in posting article" do
-          expect(page).to have_selector ".alert-success", text: "記事「#{sample_article.title}」を投稿しました。"
+          expect(page).to have_selector ".alert-success", text: "記事「#{new_article.title}」を投稿しました。"
         end
 
         it "displays the posted article informaiton in the author's article table" do
           within ".article-table" do
-            expect(page).to have_content sample_article.title
-            expect(page).to have_content sample_article.description
-            expect(page).to have_content sample_article.updated_at.strftime("%Y年%m月%d日-%H:%M")
+            expect(page).to have_content new_article.title
+            expect(page).to have_content new_article.description
+            expect(page).to have_content new_article.updated_at.strftime("%Y年%m月%d日-%H:%M")
+          end
+        end
+
+        context "when check box about article category is checked" do
+          let(:article_title_2) { "new article 2" }
+          let(:article_description_2) { "new article description 2" }
+          let(:article_text_2) { "It is a new article 2" }
+          let(:new_categorised_article) { Article.find_by(title: article_title_2) }
+
+          before do
+            visit new_article_path
+            fill_in "題名", with: article_title_2
+            fill_in "概要", with: article_description_2
+            fill_in "本文", with: article_text_2
+            check other_category.category_tag
+            click_button "投稿する"
+          end
+
+          it "displays a link of article's category on the article show page" do
+            visit article_path new_categorised_article
+            within ".article-info" do
+              expect(page).to have_link other_category.category_tag, href: category_path(other_category)
+            end
+          end
+
+          it "displays article informaitons on the category show page" do
+            visit category_path other_category
+            within ".article-table" do
+              expect(page).to have_link new_categorised_article.title, href: article_path(new_categorised_article)
+              expect(page).to have_link new_categorised_article.user.name, href: user_path(new_categorised_article.user)
+              expect(page).to have_content new_categorised_article.updated_at.strftime("%Y年%m月%d日-%H:%M")
+            end
           end
         end
 
         context "when check box about tweet for announce is checked" do
+          let(:article_title_3) { "new article 3" }
+          let(:article_description_3) { "new article description 3" }
+          let(:article_text_3) { "It is a new article 3" }
+          let(:new_tweeted_article) { Article.find_by(title: article_title_3) }
+
           before do
             visit new_article_path
-            fill_in "題名", with: article_title
-            fill_in "概要", with: article_description
-            fill_in "本文", with: article_text
+            fill_in "題名", with: article_title_3
+            fill_in "概要", with: article_description_3
+            fill_in "本文", with: article_text_3
             check "Twitterの専用アカウントによる告知機能を利用しますか？"
             click_button "投稿する"
           end
 
           it "displays flash message about success in posting article and tweeting for announce" do
-            expect(page).to have_selector ".alert-success", text: "記事「#{sample_article.title}」を投稿し、Twitterで告知しました。"
+            expect(page).to have_selector ".alert-success", text: "記事「#{new_tweeted_article.title}」を投稿し、Twitterで告知しました。"
           end
         end
       end
@@ -341,7 +404,15 @@ describe "article management system", type: :system do
       context "when one or more text boxes are filled in incorrectly" do
         let(:article_title) { "" }
 
-        it "displays erroor message about posting article" do
+        before do
+          visit new_article_path
+          fill_in "題名", with: article_title
+          fill_in "概要", with: article_description
+          fill_in "本文", with: article_text
+          click_button "投稿する"
+        end
+
+        it "displays error message about posting article" do
           expect(page).to have_selector "#error_explanation"
         end
 
@@ -388,6 +459,13 @@ describe "article management system", type: :system do
         end
       end
 
+      it "displays check boxes about article category" do
+        within ".form" do
+          expect(page).to have_checked_field category.category_tag
+          expect(page).to have_unchecked_field other_category.category_tag
+        end
+      end
+
       it "displays a check box about tweet for announce" do
         within ".form" do
           expect(page).to have_unchecked_field("Twitterの専用アカウントによる告知機能を利用しますか？")
@@ -399,12 +477,17 @@ describe "article management system", type: :system do
           expect(page).to have_button "更新する"
         end
       end
+
+      it "doesn't display a check box about other user's category" do
+        expect(page).to have_no_checked_field other_user_category.category_tag
+      end
     end
 
     describe "article update function" do
       let(:article_title) { article.title }
       let(:article_description) { article.description }
       let(:article_text) { article.text }
+      let(:article_category) { article.category_ids }
 
       before do
         visit edit_article_path article
@@ -431,6 +514,33 @@ describe "article management system", type: :system do
           end
         end
 
+        context "when check box about article category is checked" do
+          before do
+            visit edit_article_path article
+            fill_in "題名", with: article_title
+            fill_in "概要", with: article_description
+            fill_in "本文", with: article_text
+            check other_category.category_tag
+            click_button "更新する"
+          end
+
+          it "displays a link of article's category on the article show page" do
+            visit article_path article
+            within ".article-info" do
+              expect(page).to have_link other_category.category_tag, href: category_path(other_category)
+            end
+          end
+
+          it "displays article informaitons on the category show page" do
+            visit category_path other_category
+            within ".article-table" do
+              expect(page).to have_link article.title, href: article_path(article)
+              expect(page).to have_link article.user.name, href: user_path(article.user)
+              expect(page).to have_content article.updated_at.strftime("%Y年%m月%d日-%H:%M")
+            end
+          end
+        end
+
         context "when check box about tweet for announce is checked" do
           before do
             visit edit_article_path article
@@ -450,7 +560,7 @@ describe "article management system", type: :system do
       context "when one or more text boxes are filled in incorrectly" do
         let(:article_title) { "" }
 
-        it "displays erroor message about updating article" do
+        it "displays error message about updating article" do
           expect(page).to have_selector "#error_explanation"
         end
 

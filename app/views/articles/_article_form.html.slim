@@ -14,7 +14,7 @@
     = f.label :text
     = f.text_area :text, rows: 30, class: 'form-control', id: 'article_text'
   .mb-1
-    = f.label 'カテゴリー名'
+    = f.label 'カテゴリー名', class: 'me-3'
     = f.collection_check_boxes :category_ids, categories, :id, :category_tag
   .mb-3
     = f.label :twitter_announce, class: 'form-check-label' do

@@ -1,7 +1,7 @@
 class ArticlesController < ApplicationController
   before_action :login_required, only: [:new, :create, :edit, :update, :destroy]
   before_action :set_article, only: [:edit, :update]
-  before_action :set_categories, only: [:new, :edit]
+  before_action :set_categories, only: [:new, :create, :edit, :update]
   before_action :correct_user?, only: [:destroy]
 
   def index

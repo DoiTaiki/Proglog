@@ -28,7 +28,7 @@ p.article-info
 
 h5
   | 本文
-= auto_link(simple_format(h(@article.text), {}, sanitize: false))
+= h @article.text
 
 - if current_user&.admin? || current_user == @article.user
   = link_to '編集', edit_article_path, class: 'btn btn-primary me-3'

@@ -9,6 +9,8 @@ RUN apk update && apk add --no-cache \
       font-noto-cjk \
       fontconfig \
       git \
+      # 画像の加工(リサイズ等)に必要
+      imagemagick \
       nodejs~=14 \
       postgresql-client \
       tzdata \

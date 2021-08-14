@@ -7,6 +7,8 @@ class Article < ApplicationRecord
   has_many :category_articles, dependent: :destroy
   has_many :categories, through: :category_articles
 
+  has_rich_text :text
+
   paginates_per 10
 
   def self.ransackable_attributes(auth_object = nil)

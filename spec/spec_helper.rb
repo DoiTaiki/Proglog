@@ -16,6 +16,7 @@
 
 require 'capybara/rspec'
 require 'omniauth'
+require "action_text/system_test_helper"
 
 # Capybara.server = :puma, {Silent: true}
 #

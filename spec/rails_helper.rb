@@ -64,6 +64,7 @@ RSpec.configure do |config|
   config.include TestHelpers
   config.include TwitterApiSetting
   config.include OmniAuthTwitterMocks
+  config.include ActionText::SystemTestHelper, type: :system
   # 実行中にリトライのステータスを表示する
   config.verbose_retry = true
   # リトライの原因となった例外を表示する

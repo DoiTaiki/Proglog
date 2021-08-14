@@ -113,7 +113,7 @@ describe "article management system", type: :system do
       end
 
       it "displays an article's text" do
-        expect(page).to have_content article.text
+        expect(page).to have_content "a" * 100
       end
 
       it "doesn't display a link of a category which isn't associated with the article" do
@@ -289,7 +289,11 @@ describe "article management system", type: :system do
 
       it "displays a '本文' form" do
         within ".form" do
-          expect(page).to have_field "本文"
+          within ".field" do
+            expect(page).to have_content "本文"
+            expect(page).to have_selector "trix-toolbar"
+            expect(page).to have_selector "trix-editor"
+          end
         end
       end
 
@@ -328,7 +332,7 @@ describe "article management system", type: :system do
           visit new_article_path
           fill_in "題名", with: article_title
           fill_in "概要", with: article_description
-          fill_in "本文", with: article_text
+          fill_in_rich_text_area "本文", with: article_text
           click_button "投稿する"
         end
 
@@ -358,7 +362,7 @@ describe "article management system", type: :system do
             visit new_article_path
             fill_in "題名", with: article_title_2
             fill_in "概要", with: article_description_2
-            fill_in "本文", with: article_text_2
+            fill_in_rich_text_area "本文", with: article_text_2
             check other_category.category_tag
             click_button "投稿する"
           end
@@ -390,13 +394,38 @@ describe "article management system", type: :system do
             visit new_article_path
             fill_in "題名", with: article_title_3
             fill_in "概要", with: article_description_3
-            fill_in "本文", with: article_text_3
+            fill_in_rich_text_area "本文", with: article_text_3
             check "Twitterの専用アカウントによる告知機能を利用しますか？"
             click_button "投稿する"
           end
 
           it "displays flash message about success in posting article and tweeting for announce" do
             expect(page).to have_selector ".alert-success", text: "記事「#{new_tweeted_article.title}」を投稿し、Twitterで告知しました。"
+          end
+        end
+
+        context "when a images is attached in rich_text_area" do
+          let(:article_title_4) { "new article 4" }
+          let(:article_description_4) { "new article description 4" }
+          let(:article_text_4) { "It is a new article 4" }
+          let(:image_attached_article) { Article.find_by(title: article_title_4) }
+
+          before do
+            visit new_article_path
+            fill_in "題名", with: article_title_4
+            fill_in "概要", with: article_description_4
+            fill_in_rich_text_area "本文", with: article_text_4
+            page.attach_file("#{Rails.root}/app/assets/images/test.jpg") do
+              page.find('.trix-button--icon-attach').click
+            end
+            click_button "投稿する"
+          end
+
+          it "displays a attached image on the article show page" do
+            visit article_path image_attached_article
+            within ".trix-content" do
+              expect(page).to have_selector("img[src$='test.jpg']")
+            end
           end
         end
       end
@@ -408,7 +437,7 @@ describe "article management system", type: :system do
           visit new_article_path
           fill_in "題名", with: article_title
           fill_in "概要", with: article_description
-          fill_in "本文", with: article_text
+          fill_in_rich_text_area "本文", with: article_text
           click_button "投稿する"
         end
 
@@ -420,7 +449,7 @@ describe "article management system", type: :system do
           within ".form" do
             expect(page).to have_field "題名", with: article_title
             expect(page).to have_field "概要", with: article_description
-            expect(page).to have_field "本文", with: article_text
+            expect(page).to have_selector "trix-editor", text: article_text
           end
         end
       end
@@ -455,7 +484,11 @@ describe "article management system", type: :system do
 
       it "displays a '本文' form which is filled in" do
         within ".form" do
-          expect(page).to have_field "本文", with: article.text
+          within ".field" do
+            expect(page).to have_content "本文"
+            expect(page).to have_selector "trix-toolbar"
+            expect(page).to have_selector "trix-editor", text: "a" * 100
+          end
         end
       end
 
@@ -493,7 +526,7 @@ describe "article management system", type: :system do
         visit edit_article_path article
         fill_in "題名", with: article_title
         fill_in "概要", with: article_description
-        fill_in "本文", with: article_text
+        fill_in_rich_text_area "本文", with: article_text
         click_button "更新する"
       end
 
@@ -519,7 +552,7 @@ describe "article management system", type: :system do
             visit edit_article_path article
             fill_in "題名", with: article_title
             fill_in "概要", with: article_description
-            fill_in "本文", with: article_text
+            fill_in_rich_text_area "本文", with: article_text
             check other_category.category_tag
             click_button "更新する"
           end
@@ -546,13 +579,33 @@ describe "article management system", type: :system do
             visit edit_article_path article
             fill_in "題名", with: article_title
             fill_in "概要", with: article_description
-            fill_in "本文", with: article_text
+            fill_in_rich_text_area "本文", with: article_text
             check "Twitterの専用アカウントによる告知機能を利用しますか？"
             click_button "更新する"
           end
 
           it "displays flash message about success in updating article and tweeting for announce" do
             expect(page).to have_selector ".alert-success", text: "記事「#{article.title}」を編集し、Twitterで告知しました。"
+          end
+        end
+
+        context "when a images is attached in rich_text_area" do
+          before do
+            visit edit_article_path article
+            fill_in "題名", with: article_title
+            fill_in "概要", with: article_description
+            fill_in_rich_text_area "本文", with: article_text
+            page.attach_file("#{Rails.root}/app/assets/images/test.jpg") do
+              page.find('.trix-button--icon-attach').click
+            end
+            click_button "更新する"
+          end
+
+          it "displays a attached image on the article show page" do
+            visit article_path article
+            within ".trix-content" do
+              expect(page).to have_selector("img[src$='test.jpg']")
+            end
           end
         end
       end
@@ -568,7 +621,7 @@ describe "article management system", type: :system do
           within ".form" do
             expect(page).to have_field "題名", with: article_title
             expect(page).to have_field "概要", with: article_description
-            expect(page).to have_field "本文", with: article_text
+            expect(page).to have_selector "trix-editor", text: "a" * 100
           end
         end
       end

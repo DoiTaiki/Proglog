@@ -12,8 +12,11 @@ commands:
           name: Install bootstrap
           command: yarn add bootstrap@5 jquery@3 @popperjs/core@2
       - run:
+          name: Update package list
+          command: sudo apt-get update
+      - run:
           name: Install Imagemagick
-          command: sudo apt-get update && sudo apt-get -y install imagemagick
+          command: sudo apt-get -y install imagemagick
 
 orbs:
   ruby: circleci/ruby@1

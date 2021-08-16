@@ -129,6 +129,14 @@ Parameters:
     Type: String
     Description: Access token secret to use twitter api function
     NoEcho: true
+  HostedZone:
+    Type: String
+    Description: The hosted zone of this application's domain
+    Default: 'proglog.life'
+  HostedZoneId:
+    Type: String
+    Description: The hosted zone id of this application's domain
+    Default: 'Z03xxxxxx'
 Resources:
   albSecGroup:
     Type: AWS::EC2::SecurityGroup
@@ -246,16 +254,59 @@ Resources:
               - ALB
         - Key: CostTag
           Value: !Ref AWS::StackName
-  albListener:
+  # http(80)をhttps(443)へリダイレクトさせる設定
+  albListenerHTTP:
     Type: AWS::ElasticLoadBalancingV2::Listener
     Properties:
+      DefaultActions:
+        - Type: "redirect"
+          RedirectConfig:
+            Protocol: "HTTPS"
+            Port: 443
+            Host: "#{host}"
+            Path: "/#{path}"
+            Query: "#{query}"
+            # 301(恒久的な転送)と302(一時的な転送)があるが、httpを使用することはないので301に設定
+            StatusCode: "HTTP_301"
+      LoadBalancerArn: !Ref alb
+      Port: 80
+      Protocol: "HTTP"
+  # httpsで接続リクエストを行う設定
+  albListenerHTTPS:
+    Type: AWS::ElasticLoadBalancingV2::Listener
+    Properties:
+      Certificates:
+        - CertificateArn: !Ref myCertificate
       DefaultActions:
         -
           TargetGroupArn: !Ref albTargetGroup
           Type: forward
       LoadBalancerArn: !Ref alb
-      Port: 80
-      Protocol: HTTP
+      Port: 443
+      Protocol: HTTPS
+  #ApplicationLoadBalancerに独自ドメイン名を付与する設定
+  dnsRecord:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      #独自ドメインのホストゾーンID(Route53でドメイン登録したものなら、ホストゾーンはデフォルトで作成されている)
+      HostedZoneId: !Ref HostedZoneId
+      Name: !Ref HostedZone
+      Type: A
+      AliasTarget:
+        #ALBのホストゾーンID
+        HostedZoneId: !GetAtt alb.CanonicalHostedZoneID
+        DNSName: !GetAtt alb.DNSName
+  #https通信用のSSL証明書を発行する設定
+  myCertificate:
+    Type: AWS::CertificateManager::Certificate
+    Properties:
+      DomainName: !Ref HostedZone
+      # 発行を許可するために検証するDNSの指定(ドメインの検証・証明書の自動更新に必要なCNAMEレコードが作成されるため、ValidationMethodをDNSに指定している場合必須)
+      DomainValidationOptions:
+        - DomainName: !Ref HostedZone
+          HostedZoneId: !Ref HostedZoneId
+      #　発行を許可する方法(EMAIL or DNS)(DNSなら自動化できる)
+      ValidationMethod: DNS
   ecsCluster:
     Type: AWS::ECS::Cluster
     Properties:
@@ -421,4 +472,4 @@ Resources:
               - ECSService
         - Key: CostTag
           Value: !Ref AWS::StackName
-    DependsOn: albListener
+    DependsOn: albListenerHTTPS

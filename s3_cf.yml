@@ -5,13 +5,39 @@ Parameters:
   S3BucketName:
     Description: Type of this BacketName.
     Type: String
+  ApplicationUrl:
+    Description: The URL of your application
+    Type: String
+    Default: 'https://example.com'
 
 Resources:
   S3Bucket:
     Type: "AWS::S3::Bucket"
     Properties:
-      BucketName: !Sub ${S3BucketName}
+      BucketName: !Ref S3BucketName
       AccessControl: Private
+      CorsConfiguration:
+        CorsRules:
+          - AllowedHeaders:
+              - '*'
+            AllowedMethods:
+              - PUT
+              - POST
+              - DELETE
+            AllowedOrigins:
+              - !Ref ApplicationUrl
+            Id: myCORSRuleId1
+            MaxAge: 3600
+          - AllowedHeaders:
+              - '*'
+            AllowedMethods:
+              - PUT
+              - POST
+              - DELETE
+            AllowedOrigins:
+              - 'http://localhost:3000'
+            Id: myCORSRuleId2
+            MaxAge: 1800
   S3BucketPolicy:
     Type: "AWS::S3::BucketPolicy"
     Properties:
@@ -21,9 +47,17 @@ Resources:
           Action:
             - "s3:GetObject"
           Effect: "Allow"
-          Resource: !Sub "arn:aws:s3:::${S3BucketName}/*"
+          Resource: !Join
+            - ''
+            - - 'arn:aws:s3:::'
+              - !Ref S3Bucket
+              - /*
           Principal: "*"
-
-Outputs:
-  S3BucketName:
-    Value: !Ref S3Bucket
+          Condition:
+            StringLike:
+              'aws:Referer':
+                - !Join
+                  - ''
+                  - - !Ref ApplicationUrl
+                    - /*
+                - 'http://localhost:3000/*'

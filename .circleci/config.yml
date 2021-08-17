@@ -12,7 +12,7 @@ commands:
           name: Install bootstrap
           command: yarn add bootstrap@5 jquery@3 @popperjs/core@2
       - run:
-          name: Update package list
+          name: Update apt's package list
           command: sudo apt-get update
       - run:
           name: Install Imagemagick

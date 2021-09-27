@@ -8,4 +8,10 @@ RSpec.describe "Sessions", type: :request do
     end
   end
 
+  describe "GET /guest_login" do
+    it "returns http success" do
+      get guest_login_path
+      expect(response).to have_http_status(:success)
+    end
+  end
 end

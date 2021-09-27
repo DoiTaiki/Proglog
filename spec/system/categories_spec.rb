@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 describe "category management system", type: :system do
-  let(:login_user) { create(:user) }
+  let(:login_user) { create(:user, :member) }
   let(:other_user) { create(:user, name: "other user") }
   let!(:category) { create(:category, user: login_user) }
   let(:other_user_category) { create(:category, user: other_user) }

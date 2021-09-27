@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe "Categories", type: :request do
-  let(:user) { create(:user) }
+  let(:user) { create(:user, :member) }
   let(:category) { create(:category, user: user) }
 
   describe "GET /categories/:id" do

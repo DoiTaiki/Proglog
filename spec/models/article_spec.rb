@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Article, type: :model do
-  let(:user) { create(:user) }
+  let(:user) { create(:user, :member) }
   let(:article) { build(:article, user: user) }
   let(:no_user_article) { build(:article) }
   let(:no_title_article) { build(:article, user: user, title: nil) }

@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 describe "common layout", type: :system do
-  let(:login_user) { create(:user) }
+  let(:login_user) { create(:user, :member) }
   let(:tweets) { twitter_client_definition.user_timeline.take(10) }
 
   before do

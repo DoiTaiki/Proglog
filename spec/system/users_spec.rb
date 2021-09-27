@@ -1,8 +1,8 @@
 require 'rails_helper'
 
 describe "user management system", type: :system do
-  let(:user) { create(:user) }
-  let(:other_user) { create(:user) }
+  let(:user) { create(:user, :member) }
+  let(:other_user) { create(:user, :member) }
   let!(:admin_user) { create(:user, admin: true) }
   let!(:article) { create(:article, user: user) }
   let!(:other_article) { create(:article, title: "other_article's title",  user: other_user) }

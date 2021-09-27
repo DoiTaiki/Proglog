@@ -1,5 +1,6 @@
 Rails.application.routes.draw do
   get '/login', to: 'sessions#new'
+  get '/guest_login', to: 'sessions#new_as_guest'
   post '/login', to: 'sessions#create'
   delete '/logout', to: 'sessions#destroy'
   get '/auth/:provider/callback', to: 'twitter_sessions#create'

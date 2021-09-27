@@ -1,7 +1,7 @@
-= form_with scope: :session, class: 'login-form' do |f|
+= form_with scope: :session, url: login_path, class: 'login-form' do |f|
   .row.mb-1
     = f.label :email, 'メールアドレス'
-    = f.text_field :email, class: 'form-control', id: 'session_email'
+    = f.text_field :email, class: 'form-control', id: 'session_email', value: default_email
   - if controller_name == 'twitter_sessions'
     .row.mb-1
       = f.label :password, 'パスワード'
@@ -13,5 +13,5 @@
   - else
     .row.mb-3
       = f.label :password, 'パスワード'
-      = f.password_field :password, class: 'form-control', id: 'session_password'
+      = f.password_field :password, class: 'form-control', id: 'session_password', value: default_password
   = f.submit button_name, class: 'btn btn-primary'

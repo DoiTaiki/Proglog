@@ -1,7 +1,10 @@
 class SessionsController < ApplicationController
-  before_action :no_login_required, only: [:new, :create]
+  before_action :no_login_required, only: [:new, :new_as_guest, :create]
 
   def new
+  end
+
+  def new_as_guest
   end
 
   def create

@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe "Users", type: :request do
   let(:user) { create(:user, :member) }
   let(:other_user) { create(:user, :member) }
-  let(:admin_user) { create(:user, admin: true) }
+  let(:admin_user) { create(:user, :member, admin: true) }
 
   describe "GET /users/new" do
     it "returns http success" do

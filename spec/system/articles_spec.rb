@@ -1,9 +1,9 @@
 require 'rails_helper'
 
 describe "article management system", type: :system do
-  let(:user) { create(:user, name: "user") }
-  let(:other_user) { create(:user, name: "other_user", email: "other_user@example.com") }
-  let(:admin_user) { create(:user, email: "admin_user@example.com", admin: true) }
+  let(:user) { create(:user, :member, name: "user") }
+  let(:other_user) { create(:user, :member, name: "other_user", email: "other_user@example.com") }
+  let(:admin_user) { create(:user, :member, email: "admin_user@example.com", admin: true) }
   let!(:article) { create(:article, user: user) }
   let(:with_description_article) { create(:article, description: "hello", user: user) }
   let(:blank_description_article) { create(:article, description: " ", user: user) }

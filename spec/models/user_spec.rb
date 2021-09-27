@@ -1,20 +1,20 @@
 require 'rails_helper'
 
 RSpec.describe User, type: :model do
-  let!(:user) { create(:user, name: "user_1", email: "user_1@example.com") }
-  let(:no_name_user) { build(:user, name: nil) }
-  let(:too_long_name_user) { build(:user, name: "a" * 51) }
-  let(:same_name_user) { build(:user, name: "user_1") }
-  let(:no_email_user) { build(:user, email: nil) }
-  let(:same_email_user) { build(:user, email: "user_1@example.com") }
-  let(:wrong_format_email_user) { build(:user, email: "aaa") }
-  let(:no_blog_name_user) { build(:user, blog_name: nil) }
-  let(:too_long_blog_name_user) { build(:user, blog_name: "a" * 31) }
-  let(:too_long_profile_user) { build(:user, profile: "a" * 256) }
-  let(:no_password_user) { build(:user, password: nil) }
-  let(:too_short_password_user) { build(:user, password: "a") }
-  let(:no_password_confirmation_user) { build(:user, password_confirmation: nil) }
-  let(:different_password_confirmation_user) { build(:user, password: "a", password_confirmation: "b") }
+  let!(:user) { create(:user, :member, name: "user_1", email: "user_1@example.com") }
+  let(:no_name_user) { build(:user, :member, name: nil) }
+  let(:too_long_name_user) { build(:user, :member, name: "a" * 51) }
+  let(:same_name_user) { build(:user, :member, name: "user_1") }
+  let(:no_email_user) { build(:user, :member, email: nil) }
+  let(:same_email_user) { build(:user, :member, email: "user_1@example.com") }
+  let(:wrong_format_email_user) { build(:user, :member, email: "aaa") }
+  let(:no_blog_name_user) { build(:user, :member, blog_name: nil) }
+  let(:too_long_blog_name_user) { build(:user, :member, blog_name: "a" * 31) }
+  let(:too_long_profile_user) { build(:user, :member, profile: "a" * 256) }
+  let(:no_password_user) { build(:user, :member, password: nil) }
+  let(:too_short_password_user) { build(:user, :member, password: "a") }
+  let(:no_password_confirmation_user) { build(:user, :member, password_confirmation: nil) }
+  let(:different_password_confirmation_user) { build(:user, :member, password: "a", password_confirmation: "b") }
 
   it "is valid with a name, email, password, password_confirmation" do
     expect(user).to be_valid

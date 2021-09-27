@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 describe "login system", type: :system do
-  let!(:guest_user) { create(:user, :guest) }
+  let!(:guest_user) { create(:user, :member, :guest) }
   let(:login_user) { create(:user, :member) }
 
   describe "session new funciton" do

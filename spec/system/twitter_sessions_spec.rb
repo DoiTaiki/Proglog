@@ -2,7 +2,7 @@ require 'rails_helper'
 
 describe "twitter session system", type: :system do
   let(:login_user) { create(:user, :member) }
-  let!(:login_user_linked_by_twitter) { create(:user, uid: "123545") }
+  let!(:login_user_linked_by_twitter) { create(:user, :member, uid: "123545") }
 
   describe "twitter session create funciton" do
     before do

@@ -1,4 +1,4 @@
-= form_with scope: :session, url: login_path, class: 'login-form' do |f|
+= form_with scope: :session, url: url, class: 'login-form' do |f|
   .row.mb-1
     = f.label :email, 'メールアドレス'
     = f.text_field :email, class: 'form-control', id: 'session_email', value: default_email

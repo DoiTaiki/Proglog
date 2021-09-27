@@ -6,7 +6,7 @@
 twitterAPIを用いた、お手軽ログイン機能、記事の拡散を目論む告知ツイート機能を実装しています。  
 Rail6から標準機能となったAction Textを用いた、文字の修飾機能(太字、イタリック等)、画像のドラッグ＆ドロップ機能を実装しています。  
 その他の機能は機能一覧に記載致します。
-<img width="1680" alt="スクリーンショット 2021-09-27 21 25 55" src="https://user-images.githubusercontent.com/69506096/134907871-9b380106-7fd3-4747-a581-8a6f7d70b948.png">
+<img width="1680" alt="スクリーンショット 2021-09-28 0 33 13" src="https://user-images.githubusercontent.com/69506096/134939659-c82b0923-c20d-46d0-a323-cf6e42556559.png">
 
 __使用技術__  
 * 主要開発言語  

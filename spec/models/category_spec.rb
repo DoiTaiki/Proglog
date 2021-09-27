@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Category, type: :model do
-  let(:user) { create(:user) }
+  let(:user) { create(:user, :member) }
   let(:category) { build(:category, user: user) }
   let(:no_user_category) { build(:category) }
   let(:no_category_tag_category) { build(:category, user: user, category_tag: nil) }

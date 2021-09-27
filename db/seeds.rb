@@ -6,6 +6,14 @@ admin_user = User.find_or_create_by!(email: 'aaa@example.com') do |user|
   user.admin = true
 end
 
+guest_user = User.find_or_create_by!(email: 'guest_user@example.com') do |user|
+  user.name = "guest_user"
+  user.blog_name = "guest_user_blog"
+  user.password = "password"
+  user.password_confirmation = "password"
+  user.admin = true
+end
+
 50.times do |n|
   User.find_or_create_by!(email: "user_#{n}@example.com") do |user|
     user.name = "user_#{n}"

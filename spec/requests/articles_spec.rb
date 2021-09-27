@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe "Articles", type: :request do
-  let(:user) { create(:user) }
+  let(:user) { create(:user, :member) }
   let(:article) { create(:article, user: user) }
 
   describe "GET /articles/new" do

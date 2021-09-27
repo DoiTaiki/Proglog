@@ -1,8 +1,8 @@
 require 'rails_helper'
 
 describe "login system", type: :system do
-  let!(:guest_user) { create(:user) }
-  let(:login_user) { create(:user) }
+  let!(:guest_user) { create(:user, :guest) }
+  let(:login_user) { create(:user, :member) }
 
   describe "session new funciton" do
     before do
@@ -112,7 +112,7 @@ describe "login system", type: :system do
 
     it "displays 'メールアドレス' form" do
       within ".login-form" do
-        expect(page).to have_field "メールアドレス", with: "user_1@example.com"
+        expect(page).to have_field "メールアドレス", with: "guest_user@example.com"
       end
     end
 
